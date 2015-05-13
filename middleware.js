@@ -134,7 +134,7 @@ exports.csrf = function csrf(options) {
 
     // check
     if (val !== token) {
-      logger.warn(util.format('CSRF failure at %s', req.url));
+      log.warn(util.format('CSRF failure at %s', req.url));
       return res.send(403);
     }
 
