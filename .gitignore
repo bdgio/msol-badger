@@ -18,3 +18,4 @@ public/.DS_Store
 *.env
 *#*
 todo.txt
+config.env

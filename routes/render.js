@@ -170,8 +170,11 @@ exports.criteria = function criteria(req, res) {
   });
 }
 
+//Landing Page
 exports.anonymousHome = function all(req, res) {
-  return res.render('public/anonymous-home.html', {
+  return res.render('public/explore.html', {
+    title: "Explore",
+    active: "explore",
     user: req.session.user,
     csrf: req.session._csrf,
   });
