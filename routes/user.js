@@ -41,7 +41,7 @@ exports.login = function login(req, res, next) {
 
 exports.logout = function logout(req, res) {
   req.session.destroy(function () {
-    return res.redirect('/login');
+    return res.redirect('/');
   });
 };
 

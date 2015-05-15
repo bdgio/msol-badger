@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta name="csrf" content="{{csrf}}">
     <!-- Le styles -->
     <link href="/css/base.css" rel="stylesheet">
     <link href="/css/msol.css" rel="stylesheet">
@@ -42,6 +43,10 @@
           <ul class="nav navbar-nav navbar-right">
              {% if user %}
              <li class="{%if active == 'my-badges'%}active{%endif%}"><a href="/my-badges"> My Badges</a></li>
+             {% if access == "super" %}
+             <li class="{%if active == 'admin'%}active{%endif%}"><a href="/admin"> Admin</a></li>
+             <li class="{%if active == 'issuer'%}active{%endif%}"><a href="/issuer"> Issue </a></li>
+             {% endif %}
               <li>
                 <a href="" class="js-logout-link">Log Out</a>
                 <form method="post" action="/logout" class="logout-form js-logout-form">
@@ -76,6 +81,7 @@
     <div id="body">
       <div class="container-fluid">
       {% block body %}{% endblock %}
+      {% block main %}{% endblock %}
       </div>
     </div>
     
@@ -112,5 +118,6 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/common.js"></script>
     <script src="/js/login.js"></script>
+    {% block footer %}{% endblock %}
   </body>
 </html>
