@@ -12,6 +12,7 @@ const _ = require('underscore');
 
 exports.issuerIndex = function (req, res) {
   return res.render('admin/issuer-index.html', {
+    title: "Issue Badges",
     page: 'issuer-index',
     badges: req.badges,
     user: req.session.user,
@@ -22,6 +23,7 @@ exports.issuerIndex = function (req, res) {
 
 exports.issueBadge = function (req, res) {
   return res.render('admin/issue-badge.html', {
+    title: "Issue Badge",
     page: 'issue-badge',
     badge: req.badge,
     results: req.flash('results').pop(),
@@ -54,6 +56,7 @@ exports.newBadgeForm = function (req, res) {
 exports.editBadgeForm = function (req, res) {
   return res.render('admin/create-or-edit-badge.html', {
     page: 'edit-badge',
+    title: "Create or Edit Badge",
     editing: true,
     badge: req.badge,
     issuers: req.issuers,
@@ -65,6 +68,7 @@ exports.editBadgeForm = function (req, res) {
 
 exports.newIssuerForm = function (req, res) {
   return res.render('admin/create-or-edit-issuer.html', {
+    title: "Create Issuer",
     page: 'new-issuer',
     issuer: new Issuer,
     user: req.session.user,
@@ -75,6 +79,7 @@ exports.newIssuerForm = function (req, res) {
 
 exports.newProgramForm = function (req, res) {
   return res.render('admin/create-or-edit-program.html', {
+    title: "Create Program",
     page: 'new-program',
     program: new Program,
     user: req.session.user,
@@ -85,6 +90,7 @@ exports.newProgramForm = function (req, res) {
 
 exports.editProgramForm = function (req, res) {
   return res.render('admin/create-or-edit-program.html', {
+    title: "Edit Program",
     page: 'edit-program',
     editing: true,
     program:  req.program,
@@ -97,6 +103,7 @@ exports.editProgramForm = function (req, res) {
 
 exports.editIssuerForm = function (req, res) {
   return res.render('admin/create-or-edit-issuer.html', {
+    title: "Edit Issuers",
     page: 'edit-issuer',
     editing: true,
     issuer: req.issuer,
@@ -119,35 +126,34 @@ exports.newBehaviorForm = function (req, res) {
 exports.badgeIndex = function (req, res) {
   // get the count of issued badges for each badge
   async.map(req.badges,
-            function(badge, callback) {
-              badge.issuedBadgesCount(function(err, count) {
-                badge.issuedCount = count;
-                callback(err, badge);
-              });
-            },
-            function (err, badges) {
-              // get the total badge count
-              var badgeCount = _.reduce(req.badges,
-                                        function(memo, badge) {
-                                          return memo + badge.issuedCount;
-                                        }, 0);
-              return res.render('admin/badge-index.html', {
-                page: 'home',
-
-                limit: req.limit,
-                pageNumber: req.page,
-                search: req.query.search,
-
-                issuers: req.issuers,
-                user: req.session.user,
-                access: req.session.access,
-                csrf: req.session._csrf,
-                badges: req.badges,
-                badgeCount: badgeCount,
-                undoRecords: req.undoRecords,
-                behaviors: req.behaviors
-              });
-            });
+    function(badge, callback) {
+      badge.issuedBadgesCount(function(err, count) {
+        badge.issuedCount = count;
+        callback(err, badge);
+      });
+    },
+    function (err, badges) {
+      // get the total badge count
+      var badgeCount = _.reduce(req.badges,
+        function(memo, badge) {
+          return memo + badge.issuedCount;
+          }, 0);
+          return res.render('admin/badge-index.html', {
+            page: 'home',
+            title: "Admin",
+            limit: req.limit,
+            pageNumber: req.page,
+            search: req.query.search,
+            issuers: req.issuers,
+            user: req.session.user,
+            access: req.session.access,
+            csrf: req.session._csrf,
+            badges: req.badges,
+            badgeCount: badgeCount,
+            undoRecords: req.undoRecords,
+            behaviors: req.behaviors
+          });
+        });
 };
 
 exports.showBadge = function (req, res) {
@@ -167,13 +173,18 @@ exports.criteria = function criteria(req, res) {
     badge: req.badge,
     user: req.session.user,
     csrf: req.session._csrf,
+    access: req.session.access
   });
 }
 
+//Landing Page
 exports.anonymousHome = function all(req, res) {
-  return res.render('public/anonymous-home.html', {
+  return res.render('public/explore.html', {
+    title: "Explore",
+    active: "explore",
     user: req.session.user,
     csrf: req.session._csrf,
+    access: req.session.access
   });
 };
 
@@ -183,6 +194,7 @@ exports.claim = function claim(req, res) {
     code: req.query.code,
     missing: req.query.missing,
     user: req.session.user,
+    access: req.session.access
   });
 };
 
@@ -193,23 +205,27 @@ exports.confirmClaim = function confirmClaim(req, res) {
     claim: req.claim,
     badge: req.badge,
     user: req.session.user,
+    access: req.session.access
   });
 };
 
 exports.manageClaimCodes = function (req, res) {
   return res.render('admin/manage-claim-codes.html', {
+    title: "Manage Claim Codes",
     page: 'edit-badge',
     user: req.session.user,
     access: req.session.access,
     csrf: req.session._csrf,
     badge: req.badge,
     codes: req.badge.claimCodes,
-    exampleCode: phrases(1)
+    exampleCode: phrases(1),
+    access: req.session.access
   });
 };
 
 exports.getUnclaimedCodesHtml = function (req, res) {
   return res.render('admin/claim-code-printout.html', {
+    title: "Print Claim Code",
     badge: req.badge,
     batchName: req.query.batchName,
     claimUrlText: process.env.OPENBADGER_CLAIM_URL_TEXT,

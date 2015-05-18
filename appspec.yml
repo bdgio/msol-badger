@@ -1,0 +1,38 @@
+version: 0.0
+
+os: linux
+
+files:
+  - source: /
+    destination: /tmp/msol-badger
+
+# permissions:
+#   - object:
+#     pattern:
+#     except:
+#     owner:
+#     group:
+#     mode: 
+#     acls:
+#       -
+#     context:
+#       user:
+#       type:
+#       range:
+#     type:
+#       -
+
+# hooks:
+#   AfterInstall:
+#     - location: deployment/stop.sh
+#       runas: root
+
+#   ApplicationStart:
+#     - location: deployment/start.sh
+#       timeout: 
+#       runas: root
+
+
+#  ApplicationStop:
+#  BeforeInstall:
+#  ValidateService:

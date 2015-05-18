@@ -1,0 +1,17 @@
+# dependencies:
+#   override:
+#     - bundle install: 
+#         timeout: 3600 # fail if command has no output for 60 minutes
+
+# test:
+#   override:
+#     - echo "I don't often test my code, but when I do, I do it in production."
+
+## Customize deployment commands
+deployment:
+  production:
+    branch: master
+    codedeploy:
+      msol-badger:
+        deployment_group: msol-badger-production-deployment-group
+

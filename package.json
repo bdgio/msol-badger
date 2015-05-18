@@ -4,7 +4,7 @@
   "version": "2.0.44",
   "private": true,
   "scripts": {
-    "start": "node app | bunyan",
+    "start": "source config.env | grunt | node app | bunyan",
     "start-with-logs": "node app | messina | bunyan",
     "test": "bin/test.js"
   },
@@ -38,7 +38,11 @@
     "tap": "~0.4.1",
     "sinon": "1.7.2",
     "supertest": "0.6.0",
-    "prompt": "0.2.9"
+    "prompt": "0.2.9",
+    "grunt": "0.4.5",
+    "grunt-cli": "0.1.13",
+    "grunt-contrib-less": "1.0.1",
+    "grunt-contrib-watch": "0.6.1"
   },
   "engines": {
     "node": "~0.8.0",
