@@ -29,6 +29,9 @@ function addClaimManagementRoutes(app, prefix) {
 exports.define = function defineRoutes(app) {
   /** Routes */
   app.get('/', render.anonymousHome);
+  app.get('/explore', render.anonymousHome);
+  app.get('/about', render.about);
+ // app.get('/faq', render.faq);
 
   app.all('/issuer*', user.requireAuth({
     level: 'issuer',
