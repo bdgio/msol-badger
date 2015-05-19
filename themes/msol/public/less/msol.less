@@ -1,0 +1,62 @@
+@import "public/less/base.less";
+@import "font-faces.less";
+@import "variables.less";
+
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 140px;
+}
+
+/*.body .container-fluid {
+    padding-bottom: 200px;
+}*/
+
+/** Nav **/
+ul.navbar-nav {
+  padding-top: 30px;
+  padding-left: 15px;
+  font-weight: bold;
+  font-size: @font-size-large;
+  font-family: @font-family-base;
+}
+
+/** footer **/
+
+.navbar-inverse .navbar-nav > li > a {
+    font-size: @font-size-base;
+}
+
+.footer {
+height: 140px;
+}
+
+.footer .copyright {
+  font-size: @font-size-small;
+  color: @gray-light;
+  padding-top: 15px;
+  vertical-align: bottom-text;
+}
+
+
+/* Small Devices, Tablets */
+  @media only screen and (max-width : 768px) {
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (max-width : 480px) {
+  .footer img {
+    display: none;
+  }
+  .navbar-inverse .navbar-nav > li > a {
+    font-size: @font-size-small;
+  }
+  .navbar-fixed-bottom {
+    height: auto;
+  }
+}
+
+/* Custom, iPhone Retina */ 
+@media only screen and (max-width : 320px) {
+       
+}

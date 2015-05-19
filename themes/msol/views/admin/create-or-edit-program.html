@@ -1,0 +1,124 @@
+{% extends "public/layout.html" %}
+
+{% block main %}
+<form method="post" action="?" enctype="multipart/form-data">
+  <div class="form-group">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <legend>
+    {% if editing %}
+      Edit Program: {{ program.name }}
+      <p>
+        <image
+           src="{{ program.image | dataurl('image/png') }}"
+           style="max-height:200px">
+      </p>
+    {% else %}
+      New Program
+    {% endif %}
+  </legend>
+  </div>
+  {% if issuers %}
+    <div class="form-group">
+      <label for="issuer">Issuing Organization</label>
+
+      <select id="issuer" name="issuerId">
+        {% for issuer in issuers %}
+        <option
+           value="{{ issuer.id }}"
+           {% if issuer.id == program.issuer %}
+           selected
+           {% endif %}>
+
+          {{ issuer.name|e }}
+        </option>
+        {% endfor %}
+      </select>
+      <hr>
+    </div>
+  {% endif %}
+
+
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input
+       id="name"
+       type="text"
+       name="name"
+       value="{{ program.name | default('') }}"
+       placeholder="Youth Readers Program"
+       required>
+  </div>
+
+  <div class="form-group">
+    <label for="description">Description</label>
+    <input
+       id="description"
+       type="text"
+       name="description"
+       value="{{ program.description | default('') }}"
+       placeholder="A short description">
+  </div>
+
+  <div class="form-group">
+    <label for="startDate">Start Date</label>
+    <input
+       id="startDate"
+       type="date"
+       name="startDate"
+       value="{{ program.startDate | dateInput }}">
+  </div>
+
+  <div class="form-group">
+    <label for="endDate">End Date</label>
+    <input
+       id="endDate"
+       type="date"
+       name="endDate"
+       value="{{ program.endDate | dateInput }}">
+  </div>
+
+  <div class="form-group">
+    <label for="url">URL</label>
+    <input
+       id="url"
+       type="url"
+       name="url"
+       value="{{ program.url | default('') }}"
+       placeholder="http://example.org">
+  </div>
+
+  <div class="form-group">
+    <label for="contact">Contact (optional)</label>
+    <input
+       id="contact"
+       type="email"
+       name="contact"
+       value="{{ program.contact | default('') }}"
+       placeholder="admin@example.org">
+  </div>
+
+  <div class="form-group">
+    <label for="phone">Phone (optional)</label>
+    <input
+       id="phone"
+       type="tel"
+       name="phone"
+       value="{{ program.phone | default('') }}"
+       placeholder="(555) 555-5555">
+  </div>
+
+  <div class="form-group">
+    <label for="image">New Image (optional)</label>
+    <input
+       id="image"
+       type="file"
+       name="image"
+       accept="image/png">
+  </div>
+
+  <div class="form-group">
+    <input class="btn btn-primary" type="submit" value="Save Program">
+  </div>
+
+</form>
+{% endblock %}
