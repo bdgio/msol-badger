@@ -4,13 +4,9 @@
 
 
 body {
-  /* Margin bottom by footer height */
   margin-bottom: 140px;
 }
 
-/*.body .container-fluid {
-    padding-bottom: 200px;
-}*/
 
 /** Nav **/
 ul.navbar-nav {
@@ -18,6 +14,14 @@ ul.navbar-nav {
   padding-left: 15px;
   font-weight: bold;
   font-size: @font-size-large;
+  font-family: @font-family-base;
+}  
+
+ul.subnav {
+  padding-top: 10px;
+  padding-left: 15px;
+  font-weight: bold;
+  font-size: @font-size-base;
   font-family: @font-family-base;
 }
 
@@ -38,13 +42,129 @@ height: 140px;
   vertical-align: bottom-text;
 }
 
+.body-fluid-container {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+img { 
+  width: 100%;
+  z-index: 0;
+}
+
+/* About Page */
+
+.lighthouse {
+  height: 267px; 
+  overflow: hidden;
+}
+
+.about-row {
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.about-row-last {
+  display: block;
+  margin-bottom: 60px;
+}
+
+.bluefiller {
+	background:#0085ca;
+}
+
+.bluefiller-text {
+	width:100%;
+	text-align:center;
+	color:white;
+	padding-top:15px;
+	padding-bottom:15px;
+	font-size:@font-size-large;
+	font-weight: bold;
+	vertical-align:top;
+}
+
+.how-it-works img, .who-benefits img {
+  width: 75%;
+}
+
+.how-it-works-desc img, .who-benefits-desc img {
+  display: none;
+}
+
+.who-benefits, .who-benefits-desc {
+  background:#8CD600;
+}
+
+.who-benefits {
+  padding-top: 30px;
+}
+
+.who-benefits-desc {
+  padding-bottom: 30px;
+}
+
+.pilot h4 {
+  padding: 0 50px;
+}
+
+.founders {
+  padding: 0 20px;
+}
+
+.founders img {
+  width: 75%;
+}
+
 
 /* Small Devices, Tablets */
   @media only screen and (max-width : 768px) {
+  
+  ul.subnav {
+    display: none;
+  }
+  
+  .about-row {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
+  
+  .what-it-is p {
+    padding: 15px 10px 0 10px;
+  }
+  
+  .how-it-works-desc img, .who-benefits-desc img {
+    display: block;
+    padding-top: 15px;
+    width: 30%;
+    margin: 0 auto;
+  }
+  
+  .how-it-works img, .who-benefits img {
+    display: none;
+  }
+  
+  .involved {
+    padding-left: 220px;
+  }
 }
 
 /* Extra Small Devices, Phones */ 
 @media only screen and (max-width : 480px) {
+
+  .lighthouse {
+    height: auto; 
+  }
+
+  ul.subnav, .subnavbar {
+    display: none;
+  }
   .footer img {
     display: none;
   }
@@ -54,9 +174,74 @@ height: 140px;
   .navbar-fixed-bottom {
     height: auto;
   }
+  
+  .about-row {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
+  
+  .what-it-is p, .bluefiller-text {
+    padding: 15px 10px 15px 10px;
+  }
+  
+  .how-it-works-desc img, .who-benefits-desc img {
+    display: block;
+    padding-top: 15px;
+    width: 75%;
+    margin: 0 auto;
+  }
+  
+  .how-it-works img, .who-benefits img {
+    display: none;
+  }
+  
+  .involved {
+    padding-left: 80px;
+  }
 }
 
 /* Custom, iPhone Retina */ 
 @media only screen and (max-width : 320px) {
-       
+       .lighthouse {
+         height: auto; 
+       }
+
+       ul.subnav, .subnavbar {
+         display: none;
+       }
+       .footer img {
+         display: none;
+       }
+       .navbar-inverse .navbar-nav > li > a {
+         font-size: @font-size-small;
+       }
+       .navbar-fixed-bottom {
+         height: auto;
+       }
+
+       .about-row {
+         display: block;
+         margin-top: 10px;
+         margin-bottom: 0;
+       }
+
+       .what-it-is p, .bluefiller-text {
+         padding: 15px 10px 15px 10px;
+       }
+
+       .how-it-works-desc img, .who-benefits-desc img {
+         display: block;
+         padding-top: 15px;
+         width: 75%;
+         margin: 0 auto;
+       }
+
+       .how-it-works img, .who-benefits img {
+         display: none;
+       }
+
+       .involved {
+         padding-left: 80px;
+       }
 }

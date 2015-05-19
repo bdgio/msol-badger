@@ -178,10 +178,30 @@ exports.criteria = function criteria(req, res) {
 }
 
 //Landing Page
-exports.anonymousHome = function all(req, res) {
+exports.anonymousHome = function anonymousHome(req, res) {
   return res.render('public/explore.html', {
     title: "Explore",
     active: "explore",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
+exports.about = function about(req, res) {
+  return res.render('public/about.html', {
+    title: "About",
+    active: "about",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
+exports.faq = function faq(req, res) {
+  return res.render('public/faq.html', {
+    title: "FAQ",
+    active: "faq",
     user: req.session.user,
     csrf: req.session._csrf,
     access: req.session.access
