@@ -178,15 +178,28 @@ exports.criteria = function criteria(req, res) {
 }
 
 //Landing Page
-exports.anonymousHome = function anonymousHome(req, res) {
+exports.explore = function explore(req, res) {
   return res.render('public/explore.html', {
     title: "Explore",
     active: "explore",
+    issuers: req.issuers,
     user: req.session.user,
     csrf: req.session._csrf,
     access: req.session.access
   });
 };
+
+exports.orgDetails = function orgDetails(req, res) {
+  return res.render('public/org-details.html', {
+    title: "Explore",
+    active: "explore",
+    issuer: req.issuer,
+    badges: req.badges,
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });  
+}
 
 exports.about = function about(req, res) {
   return res.render('public/about.html', {
