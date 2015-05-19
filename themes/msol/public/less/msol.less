@@ -56,22 +56,22 @@ img {
   z-index: 0;
 }
 
-/* About Page */
-
-.lighthouse {
-  height: 267px; 
-  overflow: hidden;
-}
-
-.about-row {
+.row-spacer-tb {
   display: block;
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
-.about-row-last {
+.row-spacer-b {
   display: block;
   margin-bottom: 60px;
+}
+
+/* About Page */
+
+.lighthouse {
+  height: 267px; 
+  overflow: hidden;
 }
 
 .bluefiller {
@@ -121,6 +121,35 @@ img {
   width: 75%;
 }
 
+/* Explore */
+
+.explore-issuer {
+  border: 1px solid @gray;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 10px;
+  height: 160px;
+}
+
+.explore-issuer:hover {
+  background: @gray-lighter;
+}
+
+.explore-issuer img {
+  width: 45%;
+}
+
+.explore-issuer p {
+  font-size: @font-size-base;
+  padding-top: 10px;
+}
+
+/* Org Details */
+
+/*.org-details img {
+  width: 25%;
+}*/
 
 /* Small Devices, Tablets */
   @media only screen and (max-width : 768px) {

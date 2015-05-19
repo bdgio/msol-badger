@@ -28,10 +28,6 @@ function addClaimManagementRoutes(app, prefix) {
 
 exports.define = function defineRoutes(app) {
   /** Routes */
-  app.get('/', render.anonymousHome);
-  app.get('/explore', render.anonymousHome);
-  app.get('/about', render.about);
- // app.get('/faq', render.faq);
 
   app.all('/issuer*', user.requireAuth({
     level: 'issuer',
@@ -160,6 +156,16 @@ exports.define = function defineRoutes(app) {
   app.get('/program/meta/:programId', [
     issuer.findProgramById
   ], issuer.meta);
+  
+  app.get('/', issuer.findAll,render.explore);
+  app.get('/explore', issuer.findAll,render.explore);
+  app.get('/about', render.about);
+  // app.get('/faq', render.faq);
+  
+  app.get('/org/:issuerId', 
+  [issuer.findById, 
+  badge.findByIssuers
+  ], render.orgDetails);
 
   app.get('/claim', render.claim);
 

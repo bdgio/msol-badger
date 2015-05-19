@@ -406,12 +406,20 @@ exports.findById = function findById(req, res, next) {
 };
 
 exports.findByIssuers = function findByIssuers(req, res, next) {
-  const issuers = req.issuers;
+  const issuers = [];
+  issuers = req.issuers;
+  const issuer = req.issuer;
   const prop = util.prop;
   const wrap = util.objWrap;
 
-  if (!issuers.length)
-    return next();
+  if (!issuers.length) {
+    if (issuer) {
+      issuers.push(issuer);
+    }
+    else {
+      return next();
+    }
+  }
 
   const query = {
     '$or': issuers
@@ -422,7 +430,7 @@ exports.findByIssuers = function findByIssuers(req, res, next) {
       .map(wrap('program'))
   };
   Badge
-    .find(query, {image: 0})
+    .find(query, {})
     .populate('program')
     .exec(function (err, allBadges) {
       if (err) return next(err);
