@@ -464,6 +464,14 @@ exports.findByIssuers = function findByIssuers(req, res, next) {
     });
 };
 
+exports.findProgramBadges = function findByIssuerBadge(req, res, next) {
+ Badge.find({program:req.badge.program, _id: { '$ne': req.badge._id }}, {_id: 1, name: 1, shortname: 1, image: 1},function (err, badges) {
+   if (err) return next(err);
+   req.programBadges = badges;
+   return next();
+ });  
+};
+
 function parseLimit(limit, _default) {
   const DEFAULT = _default || 50;
   const intLimit = parseInt(limit, 10);
