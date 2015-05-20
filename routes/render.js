@@ -191,10 +191,23 @@ exports.explore = function explore(req, res) {
 
 exports.orgDetails = function orgDetails(req, res) {
   return res.render('public/org-details.html', {
-    title: "Explore",
+    title: req.issuer.name,
     active: "explore",
     issuer: req.issuer,
     badges: req.badges,
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });  
+}
+
+exports.badgeDetails = function badgeDetails(req, res) {
+  return res.render('public/badge-details.html', {
+    title: req.badge.name,
+    active: "earn",
+    issuer: req.issuer,
+    badge: req.badge,
+    programBadges: req.programBadges,
     user: req.session.user,
     csrf: req.session._csrf,
     access: req.session.access

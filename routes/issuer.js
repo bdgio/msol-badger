@@ -32,6 +32,17 @@ exports.findById = function findById(req, res, next) {
     });
 };
 
+exports.findByBadgeProgram = function findByBadgeProgram(req, res, next) {
+  Issuer.find({programs: req.badge.program},{name:1})
+    .exec(function (err, issuer) {
+      if (err) return next(err);
+      if (!issuer)
+        return res.send(404);
+      req.issuer = issuer[0];
+      return next();
+    });
+};
+
 exports.findProgramById = function findProgramById(req, res, next) {
   Program.findById(req.param('programId'))
     .exec(function (err, program) {
