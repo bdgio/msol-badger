@@ -465,11 +465,30 @@ exports.findByIssuers = function findByIssuers(req, res, next) {
 };
 
 exports.findProgramBadges = function findByIssuerBadge(req, res, next) {
- Badge.find({program:req.badge.program, _id: { '$ne': req.badge._id }}, {_id: 1, name: 1, shortname: 1, image: 1},function (err, badges) {
+ Badge.find({program:req.badge.program, _id: { '$ne': req.badge._id }}, {name: 1, shortname: 1, image: 1},function (err, badges) {
    if (err) return next(err);
    req.programBadges = badges;
    return next();
  });  
+};
+
+exports.getSimilarByBadgeTags = function getSimilarByBadgeTags(req, res, next) {
+  const tags = req.badge.tags;
+  
+  logger.info("tags " + JSON.stringify(tags));
+
+  const noTags = !tags || tags.length == 0;
+
+  if (noTags)
+    return next();
+  
+  const query = { tags: { '$in': tags }, _id: { '$ne': req.badge._id } };
+  const projection = { name: 1, shortname: 1, image: 1 };
+  Badge.find(query, projection, function (err, badges) {
+    if (err) return next(err);
+    req.similarBadges = badges;
+    return next();
+  });
 };
 
 function parseLimit(limit, _default) {

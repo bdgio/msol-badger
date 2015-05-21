@@ -208,6 +208,7 @@ exports.badgeDetails = function badgeDetails(req, res) {
     issuer: req.issuer,
     badge: req.badge,
     programBadges: req.programBadges,
+    similarBadges: req.similarBadges,
     user: req.session.user,
     csrf: req.session._csrf,
     access: req.session.access

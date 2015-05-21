@@ -39,65 +39,24 @@
   {% endfor %}
 </div>
 
-<!--<div class="row row-spacer-tb">
-  <div class="col-lg-12">
-    <h4>Badges you can earn through {{issuer.name}}</h4>
-  </div>
-</div>
-
-<div class="row row-spacer-tb">
-  {% for badge in badges %}
-  <div class="col-sm-2 text-center">
-    <a href="/badge/{{ badge._id}}"><div class="explore-issuer">
-      <img class="badge-image" src="{{ badge.imageDataURI() }}">
-      <p>{{badge.name}}</p> 
-    </div></a>
-  </div>
-  {% endfor %}
-</div>-->
-
-
-{% endblock %}
-
-
-<!-- 
-
- <div class="row">
-    <div class="col-sm-11 col-sm-offset-1 explore-issuer">
-      <img src="{{ issuer.image | dataurl('image/png') }}">
-      <p>{{issuer.name}}</p> 
+{% if similarBadges|length %}
+  <div class="row row-spacer-tb">
+    <div class="col-lg-12">
+      <h4>Other badges like this</h4>
     </div>
   </div>
 
-<div class="row">
-  <div class="col-lg-12 pull-left">
-   <div class="row">
-      {% for issuer in issuers %}
-      <div class="col-lg-3">
-        <div class="row">
-          <div class="col-sm-11 col-sm-offset-1 explore-issuer  text-center">
-            <img src="{{ issuer.image | dataurl('image/png') }}">
-            <p>{{issuer.name}}</p> 
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-      </div>
-   </div>
-  </div>
-</div>
-
-<div class="row text-center">
-    {% for issuer in issuers %}
-    <a href="/org/{{ issuer._id}}">
-      <div class="col-sm-2 explore-issuer">
-        <div class="row">
-          <div class="col-sm-7 col-sm-offset-2">
-            <image src="{{ issuer.image | dataurl('image/png') }}">
-          </div>
-          <div class="col-sm-4"></div>
-        </div>
-        <div>{{issuer.name}}</div>
+  <div class="row row-spacer-tb">
+    {% for badge in similarBadges %}
+    <div class="col-sm-2 text-center">
+      <a href="/badge/{{ badge.shortname}}"><div class="explore-issuer">
+        <img class="badge-image" src="{{ badge.imageDataURI() }}">
+        <p>{{badge.name}}</p> 
       </div></a>
-      {% endfor %}
-    </div>-->
+    </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+{% endblock %}
