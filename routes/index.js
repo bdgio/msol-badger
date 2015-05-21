@@ -170,7 +170,8 @@ exports.define = function defineRoutes(app) {
   app.get('/badge/:shortname', 
   [findBadgeByParamShortname, 
   badge.findProgramBadges,
-  issuer.findByBadgeProgram
+  issuer.findByBadgeProgram,
+  badge.getSimilarByBadgeTags
   ], render.badgeDetails);
 
   app.get('/claim', render.claim);
