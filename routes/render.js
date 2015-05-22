@@ -215,6 +215,20 @@ exports.badgeDetails = function badgeDetails(req, res) {
   });  
 }
 
+exports.earnList = function earnList(req, res) {
+  return res.render('public/earn-list.html', {
+    title: "Earn",
+    active: "earn",
+    sort: req.earnSort,
+    badges: req.badges,
+    badgesTagged: req.badgesTagged,
+    badgesPrograms: req.badgesPrograms,
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+}
+
 exports.about = function about(req, res) {
   return res.render('public/about.html', {
     title: "About",

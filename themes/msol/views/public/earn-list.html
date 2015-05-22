@@ -1,0 +1,86 @@
+{% extends "public/layout.html" %}
+{% block head %}
+  <link rel="stylesheet" href="/css/main.css">
+{% endblock %}
+{% block main %}
+
+<div class="row">
+  <div class="col-lg-10">
+    <h3>Earn</h3>
+    <p>Find out what skills you can acquire!
+  </div>
+  
+  <div class="col-lg-2 pull-right">
+    <div class="dropdown">
+      <button class="btn btn-default dropdown-toggle" type="button" id="earnMenu" data-toggle="dropdown" aria-expanded="true">
+        Sort by
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="earnMenu">
+        <li {% if sort == "az" %}class="active" {% endif %}role="presentation"><a role="menuitem" tabindex="-1" href="/earn">A-Z</a></li>
+        <li {% if sort == "track" %}class="active" {% endif %}role="presentation"><a role="menuitem" tabindex="-1" href="/earn/track">Track</a></li>
+        <li {% if sort == "org" %}class="active" {% endif %}role="presentation"><a role="menuitem" tabindex="-1" href="/earn/org">Organization</a></li>
+      </ul>
+    </div> 
+    
+  </div>  
+  
+</div>
+
+{% if badges %}
+<div class="row row-spacer-tb">
+  {% for badge in badges %}
+  <div class="col-sm-2 text-center">
+    <a href="/badge/{{ badge.shortname}}"><div class="explore-issuer">
+      <img class="badge-image" src="{{ badge.imageDataURI() }}">
+      <p>{{badge.name}}</p> 
+    </div></a>
+  </div>
+  {% endfor %}
+</div>
+{% elif badgesTagged %}
+{% for tag in badgesTagged %}
+
+<div class="row">
+  <div class="col-lg-12">
+    <h4>{{tag.name}}</h4>
+  </div>
+</div>
+
+<div class="row row-spacer-tb">
+  {% for badge in tag.badges %}
+  <div class="col-sm-2 text-center">
+    <a href="/badge/{{ badge.shortname}}"><div class="explore-issuer">
+      <img class="badge-image" src="{{ badge.imageDataURI() }}">
+      <p>{{badge.name}}</p> 
+    </div></a>
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+{% elif badgesPrograms %}
+
+{% for program in badgesPrograms %}
+
+<div class="row">
+  <div class="col-lg-12">
+    <h4>{{program.name}}</h4>
+  </div>
+</div>
+
+<div class="row row-spacer-tb">
+  {% for badge in program.badges %}
+  <div class="col-sm-2 text-center">
+    <a href="/badge/{{ badge.shortname}}"><div class="explore-issuer">
+      <img class="badge-image" src="{{ badge.imageDataURI() }}">
+      <p>{{badge.name}}</p> 
+    </div></a>
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+{% endif %}
+
+{% endblock %}

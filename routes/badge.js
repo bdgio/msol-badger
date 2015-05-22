@@ -3,6 +3,7 @@ const fs = require('fs');
 const logger = require('../lib/logger');
 const Badge = require('../models/badge');
 const BadgeInstance = require('../models/badge-instance');
+const Issuer = require('../models/issuer'); 
 const Work = require('../models/work');
 const util = require('../lib/util');
 const async = require('async');
@@ -474,8 +475,6 @@ exports.findProgramBadges = function findByIssuerBadge(req, res, next) {
 
 exports.getSimilarByBadgeTags = function getSimilarByBadgeTags(req, res, next) {
   const tags = req.badge.tags;
-  
-  logger.info("tags " + JSON.stringify(tags));
 
   const noTags = !tags || tags.length == 0;
 
@@ -511,6 +510,95 @@ function makeSearchFn(term) {
     );
   };
 }
+
+exports.findAllSortOptions = function findAllSortOptions(req, res, next) {
+  
+  var tags = [], programs = [], option = req.params.option;
+  function compareName(a,b) {
+    if (a.name < b.name)
+    return -1;
+    if (a.name > b.name)
+    return 1;
+    return 0;
+  }
+  
+  function compareProgram(a,b) {
+    if (a.program < b.program)
+    return -1;
+    if (a.program > b.program)
+    return 1;
+    return 0;
+  }
+  
+  Badge.find({}, {name: 1, shortname: 1, program: 1, tags: 1, image: 1}, function(err,badges){
+    if (err) return next(err);
+    badgesList = badges.sort(compareName);
+    if (option == "track") {
+      var i = 0;
+      _.each(badgesList,function(badge){
+        if (!badge.tags || badge.tags.length == 0) {
+          i++
+          if (i == badges.length) {
+            return next();
+          }
+        }
+        else {
+          var j= 0;
+          _.each(badge.tags, function(tag){
+              if (_.findWhere(tags,{name:tag})) {
+                var tagIndex = tags.map(function(x) {return x.name; }).indexOf(tag);
+                tags[tagIndex]['badges'].push(badge);
+              }
+              else {
+                var tagIndex = tags.length++;
+                tags[tagIndex] = {name:tag};
+                tags[tagIndex]['badges'] = [];
+                tags[tagIndex]['badges'].push(badge);
+              }
+            j++;
+            if (j == badge.tags.length) {
+              i++
+              if (i == badges.length) {
+                req.badgesTagged = tags.sort(compareName);
+                req.earnSort = "track";
+                return next();
+              }
+            }
+          });
+        }
+      });
+      
+    } else if (option == "org") {
+      var i = 0;
+      _.each(badgesList,function(badge){
+        Issuer.findOne({programs: badge.program},{name:1}, function(err, issuer) {
+          var issuerName = issuer.name;
+          if (_.findWhere(programs,{name:issuerName})) {
+            var pIndex = programs.map(function(x) {return x.name; }).indexOf(issuerName);
+            programs[pIndex]['badges'].push(badge);
+          }
+          else {
+            var pIndex = programs.length++;          
+            programs[pIndex] = {name:issuerName};
+            programs[pIndex]['badges'] = [];
+            programs[pIndex]['badges'].push(badge);
+          }
+          i++;
+          if (i == badgesList.length) {
+            req.badgesPrograms = programs.sort(compareName);
+            req.earnSort = "org";
+            return next();
+          }
+        });
+      });
+    }
+    else {
+      req.badges = badgesList;
+      req.earnSort = "az";
+      return next();
+    }    
+  });  
+};
 
 exports.findAll = function findAll(req, res, next) {
   const page = req.page = parseInt(req.query.page, 10) || 1;
