@@ -40,7 +40,7 @@ exports.buildEnvironment = function buildEnvironment(options) {
     if (!badge || !badge.relativeUrl)
       return '';
     return util.format(
-      '<img src="%s" style="float: right">',
+      '<img src="%s" class="badge-class">',
       badge.relativeUrl('image'));
   });
   env.addFilter('dataurl', function (buffer, type) {
