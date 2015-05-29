@@ -1,0 +1,25 @@
+{% extends "public/layout.html" %}
+{% block main %}
+<div class="row">
+  <div class="col-lg-6 col-lg-offset-3">
+    <h3>Login</h3>
+    <form name="emailSignUp" role="form" action="/login" method="post">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" class="form-control" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password"class="form-control" required />
+      </div>
+      <div class="form-group">
+        <p><a href="/forgotpw/">Forgot Password?</a></p>
+      </div>
+      <div class="form-group">
+        <input name="_csrf" type="hidden" value="{{ csrfToken }}"/>
+        <button class="btn btn-primary sign-in">Log In</button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

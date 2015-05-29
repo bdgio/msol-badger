@@ -1,9 +1,15 @@
+const _ = require('underscore');
 const Issuer = require('../models/issuer');
+const User = require('../models/user');
 const BadgeInstance = require('../models/badge-instance');
 const env = require('../lib/environment');
 const persona = require('../lib/persona');
 const util = require('../lib/util');
 const async = require('async');
+const logger = require('../lib/logger');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcrypt');
 
 const FORBIDDEN_MSG = 'You must be an admin to access this page';
 
@@ -44,6 +50,35 @@ exports.logout = function logout(req, res) {
     return res.redirect('/');
   });
 };
+
+exports.signup = function signup(req,res,next) {
+  var email = req.body.email;
+  var password = req.body.password;
+  var name = req.body.name;
+  var createHash = function(password){
+   return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+  }  
+  User.findOne({ 'user' :  email }, function(err, user) {
+    if (err) {
+      logger.warn("User.findOne "+err);
+      return next(err);
+    }
+    if (user)
+    return res.redirect('/'); 
+    
+    var newUser = new User();
+    newUser.user = email;
+    newUser.password = createHash(password);
+    newUser.name = req.body.name;
+    newUser.save(function(err) {
+      if (err)
+        return done(err);  
+      req.session.user = newUser;
+      getAccessLevel
+      return res.redirect('/my-badges');
+    });
+  });
+}
 
 exports.deleteInstancesByEmail = function deleteInstancesByEmail(req, res, next) {
   var form = req.body;
@@ -95,6 +130,24 @@ exports.findAll = function findAll(options) {
         };
       });
       return next();
+    });
+  };
+};
+
+exports.retrieveUser = function retrieveUser() {
+  return function (req, res, next) {
+    var badge = req.badge;
+    var reservedInstance = _.findWhere(badge.claimCodes, {code: req.params.claimCode});
+    var email = reservedInstance.reservedFor;
+    User.findOne({user:email}, function(err,user){
+      if (user) {
+        req.existingUser = user;
+        return next();
+      }
+      else {
+        req.newEarnerEmail = email;
+        return next();
+      }
     });
   };
 };

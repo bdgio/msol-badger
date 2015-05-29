@@ -33,7 +33,7 @@
 
 <div class="row">
   <div class="col-lg-offset-1 col-lg-11">
-    <h2>Issue One Badge With Evidence</h2>
+    <h2>Issue One Badge</h2>
 
     <form method="post" action="{{ badge._id }}/with-evidence" enctype="multipart/form-data">
       <input type="hidden" name="csrf" value="{{csrf}}">
@@ -43,7 +43,7 @@
       </div>
 
       <div class="form-group">
-        <label for="evidence">Evidence</label>
+        <label for="evidence">Evidence (optional)</label>
         <input type="file" multiple name="evidence">
         <span class="help-block">
           Upload as many files as you like.

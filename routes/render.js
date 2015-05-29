@@ -34,10 +34,11 @@ exports.issueBadge = function (req, res) {
 };
 
 exports.login = function (req, res) {
-  return res.render('admin/login.html', {
+  if (req.session.user)
+    res.redirect('my-badges');
+  return res.render('public/login.html', {
     page: 'login',
-    user: req.session.user,
-    access: req.session.access,
+    badge: req.badge,
     csrf: req.session._csrf,
   });
 };
@@ -247,6 +248,32 @@ exports.faq = function faq(req, res) {
     csrf: req.session._csrf,
     access: req.session.access
   });
+};
+
+exports.myBadges = function faq(req, res) {
+  return res.render('public/my-badges.html', {
+    title: "My Badges",
+    active: "mybadges",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
+exports.newUserClaim = function newUserClaim(req, res) { 
+  if (req.existingUser) {
+    res.redirect('/login');
+  }
+  else {
+    return res.render('public/create-new-user.html', {
+      title: "Create Account to Claim Your Badge",
+      badge: req.badge,
+      claimCode: req.claim,
+      email: req.newEarnerEmail,
+      active: "mybadges",
+      csrf: req.session._csrf
+    });
+  }
 };
 
 exports.claim = function claim(req, res) {

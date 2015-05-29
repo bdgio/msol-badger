@@ -3,6 +3,7 @@ var behavior = require('./behavior');
 var badge = require('./badge');
 var render = require('./render');
 var issuer = require('./issuer');
+var passportLib = require('passport');
 var api = require('./api');
 var undo = require('./undo');
 var stats = require('./stats');
@@ -161,6 +162,9 @@ exports.define = function defineRoutes(app) {
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
   // app.get('/faq', render.faq);
+  app.get('/my-badges', 
+  [badge.findByUser
+  ], render.myBadges);
   
   app.get('/org/:issuerId', 
   [issuer.findById, 
@@ -175,6 +179,11 @@ exports.define = function defineRoutes(app) {
   ], render.badgeDetails);
   
   app.get('/earn/:option?', badge.findAllSortOptions,render.earnList);
+  
+  app.get('/claim/:claimCode',[
+    badge.findByClaimCode(),
+    user.retrieveUser()
+  ], render.newUserClaim);
 
   app.get('/claim', render.claim);
 
@@ -185,6 +194,15 @@ exports.define = function defineRoutes(app) {
   app.post('/claim/confirm',[
     badge.findByClaimCode()
   ], badge.awardToUser);
+  
+/*  app.post('/new-badge-earner', 
+    passportLib.authenticate('signup', {
+      successRedirect: '/my-badges',
+      failureRedirect: '/',
+      failureFlash : true 
+    })); */
+    
+    app.post('/new-badge-earner', user.signup);
 
   app.get('/404', render.notFound);
 

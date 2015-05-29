@@ -6,6 +6,7 @@ var express = require('express');
 var http = require('http');
 var util = require('util');
 var colors = require('colors');
+var passport = require('passport');
 
 var middleware = require('./middleware');
 var template = require('./template');
@@ -35,6 +36,8 @@ var templateEnv = template.buildEnvironment({
 
 templateEnv.express(app);
 
+require('./lib/passport')(passport);
+
 app.locals.PERSONA_INCLUDE_JS_URL = "https://login.persona.org/include.js";
 api.jwtSecret = env.get('jwt_secret');
 api.limitedJwtSecret = env.get('limited_jwt_secret');
@@ -47,7 +50,11 @@ app.configure(function () {
   app.use(express.methodOverride());
   app.use(middleware.cookieParser());
   app.use(middleware.session(sessionStore));
+  app.use(middleware.setLocals());
   app.use(middleware.flash());
+  app.use(middleware.mailHandler);
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   app.use(middleware.csrf({whitelist: routes.whitelists.CSRF.concat([
     '/health_check'
@@ -56,6 +63,12 @@ app.configure(function () {
   app.use(middleware.noCache({whitelist: routes.whitelists.NO_CACHE}));
   app.use(middleware.strictTransport());
   app.use(middleware.noFrame());
+  
+  //allow nunjucks to be used directly
+  app.use(function (req, res, next) {
+    req.nunjucks = templateEnv;
+    next();
+  });
 
   app.use(app.router);
 
