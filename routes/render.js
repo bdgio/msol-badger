@@ -35,10 +35,12 @@ exports.issueBadge = function (req, res) {
 
 exports.login = function (req, res) {
   if (req.session.user)
-    res.redirect('my-badges');
+    res.redirect('/my-badges');
   return res.render('public/login.html', {
     page: 'login',
     badge: req.badge,
+    userErr: req.flash('userErr'),
+    loginErr: req.flash('loginErr'),
     csrf: req.session._csrf,
   });
 };
@@ -270,6 +272,8 @@ exports.newUserClaim = function newUserClaim(req, res) {
       badge: req.badge,
       claimCode: req.claim,
       email: req.newEarnerEmail,
+      errors: req.flash('errors'),
+      name: req.flash('name'),
       active: "mybadges",
       csrf: req.session._csrf
     });

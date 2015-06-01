@@ -162,9 +162,11 @@ exports.define = function defineRoutes(app) {
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
   // app.get('/faq', render.faq);
-  app.get('/my-badges', 
+  /*app.get('/my-badges', 
   [badge.findByUser
-  ], render.myBadges);
+  ], render.myBadges);*/
+  
+  app.get('/my-badges', render.myBadges);
   
   app.get('/org/:issuerId', 
   [issuer.findById, 
@@ -178,6 +180,7 @@ exports.define = function defineRoutes(app) {
   badge.getSimilarByBadgeTags
   ], render.badgeDetails);
   
+  /* Earn Page */
   app.get('/earn/:option?', badge.findAllSortOptions,render.earnList);
   
   app.get('/claim/:claimCode',[
@@ -185,7 +188,7 @@ exports.define = function defineRoutes(app) {
     user.retrieveUser()
   ], render.newUserClaim);
 
-  app.get('/claim', render.claim);
+ /* app.get('/claim', render.claim);
 
   app.post('/claim',[
     badge.findByClaimCode()
@@ -193,17 +196,10 @@ exports.define = function defineRoutes(app) {
 
   app.post('/claim/confirm',[
     badge.findByClaimCode()
-  ], badge.awardToUser);
-  
-/*  app.post('/new-badge-earner', 
-    passportLib.authenticate('signup', {
-      successRedirect: '/my-badges',
-      failureRedirect: '/',
-      failureFlash : true 
-    })); */
-    
-    app.post('/new-badge-earner', user.signup);
+  ], badge.awardToUser);*/
 
+  app.post('/new-badge-earner', user.signup);
+  
   app.get('/404', render.notFound);
 
   // User login/logout

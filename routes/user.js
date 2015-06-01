@@ -1,4 +1,5 @@
 const _ = require('underscore');
+const request = require('request');
 const Issuer = require('../models/issuer');
 const User = require('../models/user');
 const BadgeInstance = require('../models/badge-instance');
@@ -23,7 +24,7 @@ function getAccessLevel(email, callback) {
   });
 }
 
-exports.login = function login(req, res, next) {
+/*exports.login = function login(req, res, next) {
   const paths = {
     super: '/admin',
     issuer: '/issuer',
@@ -43,7 +44,7 @@ exports.login = function login(req, res, next) {
     req.session.access = access;
     return res.redirect(paths[access]);
   });
-};
+};*/
 
 exports.logout = function logout(req, res) {
   req.session.destroy(function () {
@@ -52,9 +53,24 @@ exports.logout = function logout(req, res) {
 };
 
 exports.signup = function signup(req,res,next) {
-  var email = req.body.email;
-  var password = req.body.password;
-  var name = req.body.name;
+  
+  req.assert('name', 'Please enter your name').notEmpty();
+  req.assert('password', 'Password should be 8 to 20 characters').len(8, 20);
+  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     req.flash('name', req.body.name);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var email = req.body.email;
+    var password = req.body.password;
+    var name = req.body.name;
+  }
+  
+
   var createHash = function(password){
    return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
   }  
@@ -74,9 +90,63 @@ exports.signup = function signup(req,res,next) {
       if (err)
         return done(err);  
       req.session.user = newUser;
-      getAccessLevel
-      return res.redirect('/my-badges');
+      getAccessLevel(newUser.user, function(err,result) {
+        const access = result[1];
+        req.session.access = access;
+        if (access == "super") {
+          return res.redirect('/admin');
+        }
+        return res.redirect('/my-badges');
+      });
     });
+  });
+}
+
+exports.login = function signup(req,res,next) {
+  
+  req.assert('email', 'Please provide a valid email').notEmpty().isEmail();
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var email = req.body.email;
+    var password = req.body.password;
+  }
+
+  var isValidPassword = function(user, password){
+    return bcrypt.compareSync(password, user.password);
+  }
+    
+  User.findOne({ 'user' :  email }, function(err, user) {
+    if (err) {
+      return next(err);
+    }
+    
+    if (!user) {// User has not been created. Either hasn't earned a badge or hasn't claimed first on yet.
+      req.flash('userErr', 'This user cannot be found. Please contact <a class="alert-link" href="mailto:help@mainestateoflearning.org">help@mainestateoflearning.org</a>');
+      return res.redirect(303, 'back');
+    }
+    
+    if (!user.password) { //Backwards compatible to Persona login
+      req.flash('loginErr', 'Login incorrect. Please try again.');
+      return res.redirect(303, 'back');
+    }
+    
+    if (!isValidPassword(user, password)) {
+      req.flash('loginErr', 'Login incorrect. Please try again.');
+      return res.redirect(303, 'back');
+    }
+    req.session.user = user;
+    getAccessLevel(user.user, function(err,result) {
+      const access = result[1];
+      req.session.access = access;
+      if (access == "super") {
+        return res.redirect('/admin');
+      }
+    });    
   });
 }
 

@@ -4,18 +4,35 @@
   <div class="col-lg-6 col-lg-offset-3">
     <h4>Congratulations on earning your {{badge.name}} badge!</h4>
     <p>Please enter your name and a password below, then click "Get My Badge" to set up your account and claim your badge.</p>
+    
     <form name="newUserSignUp" role="form" action="/new-badge-earner" method="post">
       <div class="form-group">
         <label for="name">Name</label>
-        <input type="text" name="name" id="name" class="form-control" required />
+        <input type="text" name="name" id="name" value="{{name}}" class="form-control"/>
+        <div class="text-danger">
+          {% for error in errors %}
+          {{error.name.msg}}
+          {% endfor %}
+        </div>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" name="password" id="password" class="form-control" required />
+        <input type="password" name="password" id="password" class="form-control"/>
+        <div class="help-block">(8-20 characters)</div>
+        <div class="text-danger">
+          {% for error in errors %}
+          {{error.password.msg}}
+          {% endfor %}
+        </div>
       </div>
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
-        <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" required />
+        <input type="password" name="confirmPassword" id="confirmPassword" class="form-control"/>
+        <div class="text-danger">
+          {% for error in errors %}
+          {{error.confirmPassword.msg}}
+          {% endfor %}
+        </div>
       </div>
       <div class="form-group">
         <p>Already Have an account? <a href="/login">Login</a></p>
