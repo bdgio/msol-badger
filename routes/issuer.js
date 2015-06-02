@@ -54,7 +54,7 @@ exports.findProgramById = function findProgramById(req, res, next) {
     });
 };
 exports.findByAccess = function findByAccess(req, res, next) {
-  Issuer.findByAccess(req.session.user)
+  Issuer.findByAccess(req.session.user.user)
     .populate('programs')
     .exec(function (err, issuers) {
       if (err) return next(err);
