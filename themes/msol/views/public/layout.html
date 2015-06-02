@@ -15,7 +15,6 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <link href="/css/admin.css" rel="stylesheet">
- <script type="text/javascript" src="{{ PERSONA_INCLUDE_JS_URL }}"></script>
     {% block header %}{% endblock %}
   </head>
   <body>
@@ -55,17 +54,6 @@
               </li>
               {% else %}
              <li><a href="/login"> Login </a></li>
-              
-            <!--  <li>
-                <a href="#" class="js-persona-login">
-                    <span>Login</span>
-                  </a>
-
-                <form method="post" action="/login" class="js-persona-form">
-                  <input type="hidden" name="assertion" value="" class="js-persona-input">
-                  <input type="hidden" name="csrf" value="{{ csrf }}">
-                </form>
-              </li>-->
             {% endif %}
             
           </ul>
@@ -113,7 +101,6 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/common.js"></script>
-    <script src="/js/login.js"></script>
     {% block footer %}{% endblock %}
   </body>
 </html>
