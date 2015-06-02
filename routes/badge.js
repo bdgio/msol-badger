@@ -421,18 +421,20 @@ exports.findByShortName = function (options) {
   };
 };
 
-exports.findByUser = function findByUser() {
-  return function (req, res, next) {
-   /* if (req.session.user) {
-      logger.info(req.session.user);
-    }*/
+exports.findByUser = function findByUser(req, res, next) {
+  if (!req.session.user) {
+    req.flash('private page', 'This page is private');
     return next();
-  };
-}
+  }
+  
+  const email = req.session.user.user;
+  console.log('email '+email);
+  return next();
+};
 
 exports.confirmAccess = function confirmAccess(req, res, next) {
   const badge = req.badge;
-  const email = req.session.user;
+  const email = req.session.user.user;
   const hasAccess = badge.program &&
     badge.program.issuer &&
     badge.program.issuer.hasAccess(email);
