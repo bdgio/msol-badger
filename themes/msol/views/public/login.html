@@ -6,14 +6,24 @@
     
     {% if userErr|length %}<div class="alert alert-danger" role="alert">{{userErr}}</div>{% endif %}
     {% if loginErr|length %}<div class="alert alert-danger" role="alert">{{loginErr}}</div>{% endif %}
-    <form name="emailSignUp" role="form" action="/login" method="post">
+    <form name="login" role="form" action="/login" method="post">
       <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" name="email" id="email" class="form-control" required />
+        <input type="email" name="email" id="email" value="{{email}}" class="form-control" required />
+        <div class="text-danger">
+          {% for error in errors %}
+          {{error.email.msg}}
+          {% endfor %}
+        </div>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" name="password" id="password"class="form-control" required />
+        <div class="text-danger">
+          {% for error in errors %}
+          {{error.password.msg}}
+          {% endfor %}
+        </div>
       </div>
       <div class="form-group">
         <p><a href="/forgotpw/">Forgot Password?</a></p>

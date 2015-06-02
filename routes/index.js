@@ -202,11 +202,13 @@ exports.define = function defineRoutes(app) {
   
   app.get('/404', render.notFound);
 
-  // User login/logout
+  // User login/logout/forgot password
   // -------------------
   app.get('/login', render.login);
   app.post('/login', user.login);
   app.post('/logout', user.logout);
+  app.get('/forgotpw', render.forgotPw);
+  app.post('/forgotpw', user.forgotPw);
 
   // API endpoints
   // -------------

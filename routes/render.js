@@ -29,7 +29,7 @@ exports.issueBadge = function (req, res) {
     results: req.flash('results').pop(),
     user: req.session.user,
     access: req.session.access,
-    csrf: req.session._csrf,
+    csrf: req.session._csrf
   });
 };
 
@@ -39,11 +39,22 @@ exports.login = function (req, res) {
   return res.render('public/login.html', {
     page: 'login',
     badge: req.badge,
+    errors: req.flash('errors'),
     userErr: req.flash('userErr'),
     loginErr: req.flash('loginErr'),
-    csrf: req.session._csrf,
+    email: req.flash('email'),
+    csrf: req.session._csrf
   });
 };
+
+exports.forgotPw = function (req, res) {
+  return res.render('public/forgot-pw.html', {
+    userErr: req.flash('userErr'),
+    errors: req.flash('errors'),
+    success: req.flash('success'),
+    csrf: req.session._csrf
+  });
+}
 
 exports.newBadgeForm = function (req, res) {
   return res.render('admin/create-or-edit-badge.html', {

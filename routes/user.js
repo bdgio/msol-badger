@@ -11,6 +11,8 @@ const logger = require('../lib/logger');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
+const uuid = require('node-uuid');
+const emailer = require('../lib/emailer');
 
 const FORBIDDEN_MSG = 'You must be an admin to access this page';
 
@@ -105,10 +107,12 @@ exports.signup = function signup(req,res,next) {
 exports.login = function signup(req,res,next) {
   
   req.assert('email', 'Please provide a valid email').notEmpty().isEmail();
+  req.assert('password', 'Please enter your password').notEmpty();
   
   var mappedErrors = req.validationErrors(true);
   if (mappedErrors) {
      req.flash('errors', mappedErrors);
+     req.flash('email', req.body.email);
      return res.redirect(303, 'back');
   }
   else {
@@ -127,16 +131,19 @@ exports.login = function signup(req,res,next) {
     
     if (!user) {// User has not been created. Either hasn't earned a badge or hasn't claimed first on yet.
       req.flash('userErr', 'This user cannot be found. Please contact <a class="alert-link" href="mailto:help@mainestateoflearning.org">help@mainestateoflearning.org</a>');
+      req.flash('email', req.body.email);
       return res.redirect(303, 'back');
     }
     
     if (!user.password) { //Backwards compatible to Persona login
       req.flash('loginErr', 'Login incorrect. Please try again.');
+      req.flash('email', req.body.email);
       return res.redirect(303, 'back');
     }
     
     if (!isValidPassword(user, password)) {
       req.flash('loginErr', 'Login incorrect. Please try again.');
+      req.flash('email', req.body.email);
       return res.redirect(303, 'back');
     }
     req.session.user = user;
@@ -146,9 +153,47 @@ exports.login = function signup(req,res,next) {
       if (access == "super") {
         return res.redirect('/admin');
       }
+      return res.redirect('/my-badges');
     });    
   });
 }
+
+exports.forgotPw = function forgotPw(req,res) {
+  req.assert('email', 'Please provide a valid email for your account').notEmpty().isEmail();
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var email = req.body.email;
+  }
+  
+  User.findOne({ 'user' :  email }, function(err, user) {
+    if (err) {
+      return next(err);
+    }
+    
+    if (!user) {// User has not been created. Either hasn't earned a badge or hasn't claimed first on yet.
+      req.flash('userErr', 'This user cannot be found. Please contact <a class="alert-link" href="mailto:help@mainestateoflearning.org">help@mainestateoflearning.org</a>');
+      return res.redirect(303, 'back');
+    }
+    
+    const uniqueId = uuid.v4();
+    
+    User.update ({resetPassword: uuid.v4(), resetPasswordSent: new Date()}, function(err, result){
+      if (err) {
+        req.flash('userErr', 'There was a problem. Please try again.');
+        return res.redirect(303, 'back');
+      }          
+      emailer.resetPw(email, uniqueId, req, function(err) {
+        req.flash('success', "Please check your email for instructions.");
+        return res.redirect(303, 'back');
+      });          
+    });
+   });
+};
 
 exports.deleteInstancesByEmail = function deleteInstancesByEmail(req, res, next) {
   var form = req.body;

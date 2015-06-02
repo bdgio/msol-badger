@@ -1,0 +1,7 @@
+It looks like you need a new password for Maine State of Learning. That shouldn't take long once you click this link: {{url}} and create a new, secure password. Make sure to do this within 7 days or else the link will expire.
+
+We're excited to get you back to exploring and earning badges!
+
+From your friends at Maine State of Learning
+
+P.S. If this email wasn't meant for you, you can ignore it and nothing will happen.

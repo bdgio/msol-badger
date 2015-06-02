@@ -19,10 +19,7 @@ var UserSchema = new Schema({
   name: String,
   password: String,
   resetPassword: String,
-  resetPasswordSent: {
-    type: Date,
-    expires: '7d'
-  },
+  resetPasswordSent: Date,
 
   // `credit` is an object keyed by the shortname of a behavior with the
   // value being the amount of credit the user has for that behavior.
