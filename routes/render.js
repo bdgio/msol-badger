@@ -29,18 +29,59 @@ exports.issueBadge = function (req, res) {
     results: req.flash('results').pop(),
     user: req.session.user,
     access: req.session.access,
-    csrf: req.session._csrf,
+    csrf: req.session._csrf
   });
 };
 
 exports.login = function (req, res) {
-  return res.render('admin/login.html', {
+  if (req.session.user)
+    res.redirect('/my-badges');
+  return res.render('public/login.html', {
     page: 'login',
-    user: req.session.user,
-    access: req.session.access,
-    csrf: req.session._csrf,
+    badge: req.badge,
+    errors: req.flash('errors'),
+    userErr: req.flash('userErr'),
+    loginErr: req.flash('loginErr'),
+    email: req.flash('email'),
+    csrf: req.session._csrf
   });
 };
+
+exports.forgotPw = function (req, res) {
+  return res.render('public/forgot-pw.html', {
+    userErr: req.flash('userErr'),
+    errors: req.flash('errors'),
+    success: req.flash('success'),
+    expiredErr: req.flash('expired'),
+    csrf: req.session._csrf
+  });
+}
+
+exports.resetPw = function (req, res) {
+
+  if (req.flash('notFound').length) {
+    res.status(404);
+    return res.render('public/404.html', {});
+  }
+  
+  if (req.flash('expired').length) {
+    return res.render('public/forgot-pw.html', {
+      userErr: req.flash('userErr'),
+      expiredErr: "The password reset link has expired.",
+      errors: req.flash('errors'),
+      success: req.flash('success'),
+      csrf: req.session._csrf
+    });
+  }
+  
+  return res.render('public/reset-pw.html', {
+    userErr: req.flash('userErr'),
+    errors: req.flash('errors'),
+    uniqueId: req.uniqueId,
+    csrf: req.session._csrf
+  });
+}
+
 
 exports.newBadgeForm = function (req, res) {
   return res.render('admin/create-or-edit-badge.html', {
@@ -247,6 +288,34 @@ exports.faq = function faq(req, res) {
     csrf: req.session._csrf,
     access: req.session.access
   });
+};
+
+exports.myBadges = function faq(req, res) {
+  return res.render('public/my-badges.html', {
+    title: "My Badges",
+    active: "mybadges",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
+exports.newUserClaim = function newUserClaim(req, res) { 
+  if (req.existingUser) {
+    res.redirect('/login');
+  }
+  else {
+    return res.render('public/create-new-user.html', {
+      title: "Create Account to Claim Your Badge",
+      badge: req.badge,
+      claimCode: req.claim,
+      email: req.newEarnerEmail,
+      errors: req.flash('errors'),
+      name: req.flash('name'),
+      active: "mybadges",
+      csrf: req.session._csrf
+    });
+  }
 };
 
 exports.claim = function claim(req, res) {

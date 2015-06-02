@@ -3,6 +3,7 @@ var behavior = require('./behavior');
 var badge = require('./badge');
 var render = require('./render');
 var issuer = require('./issuer');
+var passportLib = require('passport');
 var api = require('./api');
 var undo = require('./undo');
 var stats = require('./stats');
@@ -161,6 +162,11 @@ exports.define = function defineRoutes(app) {
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
   // app.get('/faq', render.faq);
+  /*app.get('/my-badges', 
+  [badge.findByUser
+  ], render.myBadges);*/
+  
+  app.get('/my-badges', render.myBadges);
   
   app.get('/org/:issuerId', 
   [issuer.findById, 
@@ -174,9 +180,15 @@ exports.define = function defineRoutes(app) {
   badge.getSimilarByBadgeTags
   ], render.badgeDetails);
   
+  /* Earn Page */
   app.get('/earn/:option?', badge.findAllSortOptions,render.earnList);
+  
+  app.get('/claim/:claimCode',[
+    badge.findByClaimCode(),
+    user.retrieveUser()
+  ], render.newUserClaim);
 
-  app.get('/claim', render.claim);
+ /* app.get('/claim', render.claim);
 
   app.post('/claim',[
     badge.findByClaimCode()
@@ -184,15 +196,24 @@ exports.define = function defineRoutes(app) {
 
   app.post('/claim/confirm',[
     badge.findByClaimCode()
-  ], badge.awardToUser);
+  ], badge.awardToUser);*/
 
+  app.post('/new-badge-earner', user.signup);
+  
   app.get('/404', render.notFound);
 
-  // User login/logout
+  // User login/logout/forgot password
   // -------------------
   app.get('/login', render.login);
   app.post('/login', user.login);
   app.post('/logout', user.logout);
+  app.get('/forgotpw', render.forgotPw);
+  app.post('/forgotpw', user.forgotPw);
+  app.get('/reset-pw/:uniqueId', [
+  user.checkUniqueId
+  ], render.resetPw);
+  
+  app.post('/reset-pw', user.newPw);
 
   // API endpoints
   // -------------

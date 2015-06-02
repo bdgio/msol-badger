@@ -5,8 +5,10 @@ const Badge = require('../models/badge');
 const BadgeInstance = require('../models/badge-instance');
 const Issuer = require('../models/issuer'); 
 const Work = require('../models/work');
+const User = require('../models/user');
 const util = require('../lib/util');
 const async = require('async');
+const emailer = require('../lib/emailer');
 
 function handleTagInput(input) {
   return (
@@ -238,6 +240,8 @@ function reportError(err) {
   return { status: 'error', error: err };
 }
 
+/* This runs when the user claims the badge */
+
 exports.awardToUser = function awardToUser(req, res, next) {
   var form = req.body;
   var email = (form.email || '').trim();
@@ -253,9 +257,11 @@ exports.awardToUser = function awardToUser(req, res, next) {
       return res.send({ status: 'not-found' });
 
     badge.awardOrFind(email, function (err, instance) {
+      logger.info("instance " + JSON.stringify(instance));
       if (err) return res.send(reportError(err));
       badge.save(function (err) {
         if (err) return res.send(reportError(err));
+        
         return res.send({
           status: 'ok',
           assertionUrl: instance.absoluteUrl('assertion')
@@ -265,7 +271,7 @@ exports.awardToUser = function awardToUser(req, res, next) {
   });
 };
 
-function reserveAndNotify(badge, evidenceFiles, email, issuedBy, callback) {
+function reserveAndNotify(req, badge, evidenceFiles, email, issuedBy, callback) {
   if (!util.isEmail(email))
     return callback(null, {email: email, status: 'invalid'});
   badge.reserveAndNotify({
@@ -276,11 +282,29 @@ function reserveAndNotify(badge, evidenceFiles, email, issuedBy, callback) {
     if (err) return callback(err);
     if (!claimCode)
       return callback(null, {email: email, status: 'dupe'});
-    return callback(null, {
-      email: email,
-      status: 'ok',
-      claimCode: claimCode
-    });
+      
+    User.findOne({user:email},function(err,userResult){
+      if (!userResult) {
+        emailer.newUserBadge(email, claimCode, req, function(err) {
+          if (err) logger.info("err "+err);
+          return callback(null, {
+            email: email,
+            status: 'ok',
+            claimCode: claimCode
+          });
+        });  
+      }
+      else {
+        emailer.awardBadge(email, claimCode, req, function(err) {
+          if (err) logger.info("err "+err);
+          return callback(null, {
+            email: email,
+            status: 'ok',
+            claimCode: claimCode
+          });
+        });
+      }
+    });      
   });
 }
 
@@ -295,8 +319,7 @@ exports.issueOneWithEvidence = function issueOneWithEvidence(req, res, next) {
       files = [files];
   } else
     files = [];
-
-  reserveAndNotify(badge, files, email, issuedBy, function(err, result) {
+  reserveAndNotify(req, badge, files, email, issuedBy, function(err, result) {
     if (err) return next(err);
     req.flash('results', [result]);
     return res.redirect(303, 'back');
@@ -313,6 +336,7 @@ exports.issueMany = function issueMany(req, res, next) {
     .map(util.method('trim'));
 
   function addTask(email, callback) {
+    logger.info("email 1 "+email);
     new Work({
       type: 'issue-badge',
       data: {
@@ -322,17 +346,33 @@ exports.issueMany = function issueMany(req, res, next) {
       }
     }).save(callback);
   }
+  
+  function addUser(email, callback) {
+    logger.info("email "+email);
+    new User({
+      user: email
+    }).save(callback);
+  }
 
   async.map(emails, addTask, function (err, results) {
     if (err) return next(err);
-    req.flash('results', results);
-    return res.redirect(303, 'back');
+   // async.map(emails, addUser, function (err, userResults) {
+     logger.info("taskResults "+JSON.stringify(results));
+      req.flash('results', results);
+      return res.redirect(303, 'back');
+   // });
   });
 };
 
 exports.findByClaimCode = function findByClaimCode(options) {
   return function (req, res, next) {
-    var code = req.body.code;
+    var code;
+    if (req.params.claimCode) {
+      code = req.params.claimCode;
+    }
+    else {
+      code = req.body.code;
+    }
     var normalizedCode = code.trim().replace(/ +/g, '-');
     Badge.findByClaimCode(normalizedCode, function (err, badge) {
       if (err) return next(err);
@@ -381,6 +421,15 @@ exports.findByShortName = function (options) {
   };
 };
 
+exports.findByUser = function findByUser() {
+  return function (req, res, next) {
+   /* if (req.session.user) {
+      logger.info(req.session.user);
+    }*/
+    return next();
+  };
+}
+
 exports.confirmAccess = function confirmAccess(req, res, next) {
   const badge = req.badge;
   const email = req.session.user;
@@ -407,8 +456,8 @@ exports.findById = function findById(req, res, next) {
 };
 
 exports.findByIssuers = function findByIssuers(req, res, next) {
-  const issuers = [];
-  issuers = req.issuers;
+  var issuers = [];
+  if (req.issuers) issuers = req.issuers;
   const issuer = req.issuer;
   const prop = util.prop;
   const wrap = util.objWrap;
