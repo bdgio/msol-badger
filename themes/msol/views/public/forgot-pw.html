@@ -3,9 +3,12 @@
 <div class="row">
   <div class="col-lg-6 col-lg-offset-3">
     <h3>Reset Password</h3>
+
+    {% if expiredErr|length %}
+    <p>{{expiredErr}}</p>
     
-    {% if success|length %}
-    <div class="alert alert-success" role="alert">{{success}}</div>
+    {% elif success|length %}
+    <p>{{success}}</p>
     
     {% else %}
     

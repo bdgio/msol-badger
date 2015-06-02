@@ -52,9 +52,36 @@ exports.forgotPw = function (req, res) {
     userErr: req.flash('userErr'),
     errors: req.flash('errors'),
     success: req.flash('success'),
+    expiredErr: req.flash('expired'),
     csrf: req.session._csrf
   });
 }
+
+exports.resetPw = function (req, res) {
+
+  if (req.flash('notFound').length) {
+    res.status(404);
+    return res.render('public/404.html', {});
+  }
+  
+  if (req.flash('expired').length) {
+    return res.render('public/forgot-pw.html', {
+      userErr: req.flash('userErr'),
+      expiredErr: "The password reset link has expired.",
+      errors: req.flash('errors'),
+      success: req.flash('success'),
+      csrf: req.session._csrf
+    });
+  }
+  
+  return res.render('public/reset-pw.html', {
+    userErr: req.flash('userErr'),
+    errors: req.flash('errors'),
+    uniqueId: req.uniqueId,
+    csrf: req.session._csrf
+  });
+}
+
 
 exports.newBadgeForm = function (req, res) {
   return res.render('admin/create-or-edit-badge.html', {

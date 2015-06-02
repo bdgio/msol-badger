@@ -39,7 +39,10 @@
     "passport": "~0.2.0",
     "passport-local": "~1.0.0",
     "bcrypt": "~0.7.7",
-    "node-uuid": "~1.4.1"
+    "node-uuid": "~1.4.1",
+    "moment": "2.0.0",
+    "phantomjs": "1.9.17",
+    "pdfkit": "0.7.1"
   },
   "devDependencies": {
     "tap": "~0.4.1",

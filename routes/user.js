@@ -13,6 +13,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 const uuid = require('node-uuid');
 const emailer = require('../lib/emailer');
+const moment = require('moment');
 
 const FORBIDDEN_MSG = 'You must be an admin to access this page';
 
@@ -72,7 +73,6 @@ exports.signup = function signup(req,res,next) {
     var name = req.body.name;
   }
   
-
   var createHash = function(password){
    return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
   }  
@@ -170,6 +170,10 @@ exports.forgotPw = function forgotPw(req,res) {
     var email = req.body.email;
   }
   
+  var createHash = function(password){
+   return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+  }
+  
   User.findOne({ 'user' :  email }, function(err, user) {
     if (err) {
       return next(err);
@@ -180,9 +184,11 @@ exports.forgotPw = function forgotPw(req,res) {
       return res.redirect(303, 'back');
     }
     
+   // const replacePw = createHash(uuid.v4()); //generating a random string to replace existing password
     const uniqueId = uuid.v4();
+    console.log("uniqueId " + uniqueId);
     
-    User.update ({resetPassword: uuid.v4(), resetPasswordSent: new Date()}, function(err, result){
+    User.update ({ user: email },{password: createHash(uuid.v4()), resetPassword: uniqueId, resetPasswordSent: new Date()}, function(err, result){
       if (err) {
         req.flash('userErr', 'There was a problem. Please try again.');
         return res.redirect(303, 'back');
@@ -193,6 +199,84 @@ exports.forgotPw = function forgotPw(req,res) {
       });          
     });
    });
+};
+
+exports.checkUniqueId = function checkUniqueId(req, res, next) {
+
+  if (!req.params.uniqueId) {
+    req.flash('notFound', '404');
+    return next();
+  }
+
+  const uniqueId = req.params.uniqueId;
+  User.findOne({ 'resetPassword' :  uniqueId }, function(err, user) {
+
+    if (!user) {
+      req.flash('notFound', '404');
+      return next();
+    }
+
+    var daysSinceReset = moment().diff(Date.parse(user.resetPasswordSent), 'days');
+      
+    if (daysSinceReset > 7) {
+      req.flash('expired', "The password reset link has expired.");
+      return next();
+    }
+
+    req.uniqueId = uniqueId;
+    return next();
+  });  
+};
+
+exports.newPw = function newPw(req, res, next) {
+  
+  req.assert('password', 'Password should be 8 to 20 characters').len(8, 20);
+  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var password = req.body.password;
+    var uniqueId = req.body.uniqueId;
+  }
+  
+  var createHash = function(password){
+   return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+  }
+  
+  User.findOne({ resetPassword:uniqueId }, function(err, user) {
+    
+    if (err || !user) {
+      req.flash('userErr', 'There was a problem. Please try again.');
+      return res.redirect(303, 'back');
+    }
+  
+    User.update({resetPassword:uniqueId},{
+      password:createHash(password),
+      resetPassword:'', 
+      resetPasswordSent:''},
+      {upsert:false}, function(err,result){
+        if (err) {
+          req.flash('userErr', 'There was a problem. Please try again.');
+          return res.redirect(303, 'back');
+        }
+    
+        req.session.user = user;
+        getAccessLevel(user.user, function(err,result) {
+          const access = result[1];
+          req.session.access = access;
+          if (access == "super") {
+            return res.redirect('/admin');
+          }
+          return res.redirect('/my-badges');
+        });
+      });    
+  });
+  
+  
 };
 
 exports.deleteInstancesByEmail = function deleteInstancesByEmail(req, res, next) {

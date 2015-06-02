@@ -209,6 +209,11 @@ exports.define = function defineRoutes(app) {
   app.post('/logout', user.logout);
   app.get('/forgotpw', render.forgotPw);
   app.post('/forgotpw', user.forgotPw);
+  app.get('/reset-pw/:uniqueId', [
+  user.checkUniqueId
+  ], render.resetPw);
+  
+  app.post('/reset-pw', user.newPw);
 
   // API endpoints
   // -------------
