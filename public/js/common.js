@@ -42,4 +42,6 @@
     $(this).parents(".btn-group").find('.selection').val($(this).text());
 
   });
+  
+  $('#pw-edit-success').delay(3000).fadeOut();
 })(jQuery);

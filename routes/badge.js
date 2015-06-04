@@ -423,13 +423,19 @@ exports.findByShortName = function (options) {
 
 exports.findByUser = function findByUser(req, res, next) {
   if (!req.session.user) {
-    req.flash('private page', 'This page is private');
     return next();
   }
   
   const email = req.session.user.user;
-  console.log('email '+email);
-  return next();
+  Badge.find({"claimCodes.reservedFor":email}, {_id: 1, name: 1, image: 1, claimCodes:1}, function(err, badges){
+    if (err)
+      return next(err);
+    req.badges = badges;
+    return next();
+  });
+  
+
+  
 };
 
 exports.confirmAccess = function confirmAccess(req, res, next) {
