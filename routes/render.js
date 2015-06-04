@@ -290,14 +290,48 @@ exports.faq = function faq(req, res) {
   });
 };
 
-exports.myBadges = function faq(req, res) {
+exports.myBadges = function myBadges(req, res) {
+  if (! req.session.user) {
+    res.status(404);
+    return res.render('public/404.html', {});
+  }
+  
+  if (req.params.editFunction == "edit-name") {
+    req.flash('editName', 'true');
+    return res.redirect(303, 'back');
+  }
+  
+  if (req.params.editFunction == "cancel-edit-name") {
+    req.flash('editName', 'false');
+    return res.redirect(303, 'back');
+  }
+  
+  if (req.params.editFunction == "edit-pw") {
+    req.flash('editPw', 'true');
+    return res.redirect(303, 'back');
+  }
+  
+  if (req.params.editFunction == "cancel-edit-pw") {
+    req.flash('editPw', 'false');
+    return res.redirect(303, 'back');
+  }
+  
   return res.render('public/my-badges.html', {
     title: "My Badges",
     active: "mybadges",
+    badges: req.badges,
+    privatePage: req.flash('private page'),
+    name: req.session.user.name,
+    editName: req.flash('editName'),
+    editPw: req.flash('editPw'),
+    editPwSuccess: req.flash('editPwSuccess'),
+    userErr: req.flash('userErr'),
+    errors: req.flash('errors'),
     user: req.session.user,
     csrf: req.session._csrf,
     access: req.session.access
   });
+
 };
 
 exports.newUserClaim = function newUserClaim(req, res) { 

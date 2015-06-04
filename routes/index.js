@@ -162,11 +162,16 @@ exports.define = function defineRoutes(app) {
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
   // app.get('/faq', render.faq);
-  /*app.get('/my-badges', 
-  [badge.findByUser
-  ], render.myBadges);*/
   
-  app.get('/my-badges', render.myBadges);
+  app.get('/mybadges/:editFunction',
+  [badge.findByUser
+  ], render.myBadges);
+
+  app.get('/mybadges', 
+  [badge.findByUser
+  ], render.myBadges);
+  
+  app.post('/mybadges/:editFunction', user.editUser);
   
   app.get('/org/:issuerId', 
   [issuer.findById, 
