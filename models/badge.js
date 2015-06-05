@@ -54,6 +54,10 @@ const ClaimCodeSchema = new Schema({
     required: false,
     trim: true,
   },
+  refused: {
+    type: Boolean,
+    default: false 
+  },
   issuedBy: {
     type: String,
     required: false,

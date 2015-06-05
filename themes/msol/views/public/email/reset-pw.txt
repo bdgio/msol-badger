@@ -1,7 +1,12 @@
-It looks like you need a new password for Maine State of Learning. That shouldn't take long once you click this link: {{url}} and create a new, secure password. Make sure to do this within 7 days or else the link will expire.
+We got a request to reset your Maine State of Learning password.
 
-We're excited to get you back to exploring and earning badges!
+You can reset it here: {{url}}
 
-From your friends at Maine State of Learning
+Note: This link will expire in 7 days.
 
-P.S. If this email wasn't meant for you, you can ignore it and nothing will happen.
+If you ignore this message, your password won't be changed.
+
+If you didn't request a password reset, let us know help@mainestateoflearning.org
+
+Thanks,
+The Maine State of Learning Team
