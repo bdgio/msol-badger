@@ -80,7 +80,7 @@ exports.signup = function signup(req,res,next) {
         if (access == "super") {
           return res.redirect('/admin');
         }
-        return res.redirect('/my-badges');
+        return res.redirect('/mybadges');
       });
     });
   });
@@ -135,7 +135,7 @@ exports.login = function signup(req,res,next) {
       if (access == "super") {
         return res.redirect('/admin');
       }
-      return res.redirect('/my-badges');
+      return res.redirect('/mybadges');
     });    
   });
 }
@@ -252,7 +252,7 @@ exports.newPw = function newPw(req, res, next) {
           if (access == "super") {
             return res.redirect('/admin');
           }
-          return res.redirect('/my-badges');
+          return res.redirect('/mybadges');
         });
       });    
   });
