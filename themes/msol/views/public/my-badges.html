@@ -5,6 +5,13 @@
 {% block main %}
 
 <div class="row">
+  <div class="col-lg-10">
+    <h3>My Badges</h3>
+    <br/>
+  </div>
+</div>
+
+<div class="row">
   <div class="col-lg-4">
     {% if editName == "true" %}
     <div class="edit-user-form">
@@ -89,14 +96,37 @@
 
 <div class="row">
   {% for badge in badges %}
-  <div class="col-sm-2 text-center">
-    <a href="/my-badge/{{ badge.shortname}}"><div class="explore-issuer">
-      <img class="badge-image" src="{{ badge.imageDataURI() }}">
-      <p>{{badge.name}}</p> 
-    </div></a>
-  </div>
+    <div class="col-sm-3 text-center">
+      <div class="explore-issuer{% if badge.unclaimed == true %} unclaimed-badge{% endif %}">
+        
+        {% if badge.unclaimed == true %}
+          <div class="new-badge-flag">New</div>
+          <img class="badge-image fade" src="{{ badge.image | dataurl('image/png') }}">
+          <div class="accept-badge"><a href="/badge-accept/{{badge.claimCode}}">Accept</a></div>
+          <div type="button" class="reject-badge text-center" data-toggle="modal" data-target="#rejectModal">Reject</div>
+          <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Are you sure?</h4>
+                </div>
+                <div class="modal-body">
+                  <p>Clicking "Reject" will remove the badge from your My Badges page.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                  <a class="btn btn-primary" href="/badge-reject/{{badge.claimCode}}">Reject</a>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+          <p>{{badge.name}}</p>
+        {% else %}
+        <a href="/my-badge/{{ badge.shortname}}"><img class="badge-image" src="{{ badge.image | dataurl('image/png') }}"><p>{{badge.name}}</p></a>
+        {% endif %}
+        </div>
+      </div>
   {% endfor %}
-    
-  </div>
 </div>
 {% endblock %}

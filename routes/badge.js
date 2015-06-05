@@ -286,7 +286,7 @@ function reserveAndNotify(req, badge, evidenceFiles, email, issuedBy, callback) 
     User.findOne({user:email},function(err,userResult){
       if (!userResult) {
         emailer.newUserBadge(email, claimCode, req, function(err) {
-          if (err) logger.info("err "+err);
+          if (err) console.log("err "+err);
           return callback(null, {
             email: email,
             status: 'ok',
@@ -295,8 +295,9 @@ function reserveAndNotify(req, badge, evidenceFiles, email, issuedBy, callback) 
         });  
       }
       else {
-        emailer.awardBadge(email, claimCode, req, function(err) {
-          if (err) logger.info("err "+err);
+        var name = userResult.name;
+        emailer.awardBadge(email, name, claimCode, req, function(err) {
+          if (err) console.log("err "+err);
           return callback(null, {
             email: email,
             status: 'ok',
@@ -336,7 +337,6 @@ exports.issueMany = function issueMany(req, res, next) {
     .map(util.method('trim'));
 
   function addTask(email, callback) {
-    logger.info("email 1 "+email);
     new Work({
       type: 'issue-badge',
       data: {
@@ -346,21 +346,12 @@ exports.issueMany = function issueMany(req, res, next) {
       }
     }).save(callback);
   }
-  
-  function addUser(email, callback) {
-    logger.info("email "+email);
-    new User({
-      user: email
-    }).save(callback);
-  }
+
 
   async.map(emails, addTask, function (err, results) {
     if (err) return next(err);
-   // async.map(emails, addUser, function (err, userResults) {
-     logger.info("taskResults "+JSON.stringify(results));
-      req.flash('results', results);
-      return res.redirect(303, 'back');
-   // });
+    req.flash('results', results);
+    return res.redirect(303, 'back');
   });
 };
 
@@ -426,17 +417,66 @@ exports.findByUser = function findByUser(req, res, next) {
     return next();
   }
   
+  /* 
+  A single badge can be reserved (issued) to the same email more than once.
+  Reorganizing data so that there is a badge for each reservedFor instance.
+  */
+  
   const email = req.session.user.user;
-  Badge.find({"claimCodes.reservedFor":email}, {_id: 1, name: 1, image: 1, claimCodes:1}, function(err, badges){
+  const badgesList = [], tmpBadges = [];
+  Badge.find({"claimCodes.reservedFor":email}, {_id:1, name:1, image:1, claimCodes:1}, function(err, badges){
     if (err)
       return next(err);
-    req.badges = badges;
-    return next();
-  });
-  
-
-  
+    var i = 0;
+    async.eachSeries(badges, function iterator(badge, callback) {
+      async.eachSeries(badge.claimCodes, function iterator(claim, callback) {
+        if (claim.reservedFor == email && claim.refused == false) {
+          var unclaimed;
+          if (! claim.claimedBy) {
+            unclaimed = true
+          }
+          badgesList.push({_id:badge._id,name:badge.name,image:badge.image,unclaimed:unclaimed,claimCode:claim.code});
+          callback();
+        }
+        else {
+          callback();
+        }
+      },
+      function(err,result) {
+        callback();
+      });
+    }, function(err) {
+      req.badges = badgesList;
+      return next();
+    });
+  });  
 };
+
+exports.myBadgeAccept = function myBadgeAccept(req, res, next) {
+  var claimCode = req.params.claimCode;
+  var email = req.session.user.user;
+  
+  Badge.update({"claimCodes.code": claimCode},{
+    "$set": {"claimCodes.$.claimedBy": email}
+  }, function (err, result){
+    if (err) 
+      return res.redirect(303, 'back');
+    return res.redirect(303, 'back');
+  });
+}
+
+exports.myBadgeReject = function myBadgeReject(req, res, next) {
+  var claimCode = req.params.claimCode;
+  
+  Badge.update({"claimCodes.code": claimCode},{
+    "$set": {"claimCodes.$.refused": true}
+  }, function (err, result){
+    if (err) 
+      return res.redirect(303, 'back');
+    return res.redirect(303, 'back');
+  });
+}
+
 
 exports.confirmAccess = function confirmAccess(req, res, next) {
   const badge = req.badge;

@@ -173,6 +173,10 @@ exports.define = function defineRoutes(app) {
   
   app.post('/mybadges/:editFunction', user.editUser);
   
+  app.get('/badge-accept/:claimCode', badge.myBadgeAccept);
+  
+  app.get('/badge-reject/:claimCode', badge.myBadgeReject);
+  
   app.get('/org/:issuerId', 
   [issuer.findById, 
   badge.findByIssuers

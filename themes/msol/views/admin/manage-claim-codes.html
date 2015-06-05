@@ -87,7 +87,11 @@
               {% if claim.multi %}
               *multi*
               {% else %}
-              {{ claim.claimedBy | default('<em>open</em>') }}
+                {% if claim.refused == true %}
+                  <em>rejected</em>
+                {% else %}
+                  {{ claim.claimedBy | default('<em>open</em>') }}
+                {% endif %}
               {% endif %}
             </td>
             <td>

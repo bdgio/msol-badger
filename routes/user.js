@@ -27,27 +27,9 @@ function getAccessLevel(email, callback) {
   });
 }
 
-/*exports.login = function login(req, res, next) {
-  const paths = {
-    super: '/admin',
-    issuer: '/issuer',
-  };
-  const assertion = req.body.assertion;
-  async.waterfall([
-    persona.verify.bind({}, assertion),
-    getAccessLevel,
-  ], function (err, result) {
-    if (err) return next(err);
-    // my kingdom for destructuring!
-    const email = result[0];
-    const access = result[1];
-    if (!access)
-      return res.send(403, FORBIDDEN_MSG);
-    req.session.user = email;
-    req.session.access = access;
-    return res.redirect(paths[access]);
-  });
-};*/
+var createHash = function(password){
+ return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+}
 
 exports.logout = function logout(req, res) {
   req.session.destroy(function () {
@@ -184,16 +166,15 @@ exports.forgotPw = function forgotPw(req,res) {
       return res.redirect(303, 'back');
     }
     
-   // const replacePw = createHash(uuid.v4()); //generating a random string to replace existing password
     const uniqueId = uuid.v4();
-    console.log("uniqueId " + uniqueId);
     
-    User.update ({ user: email },{password: createHash(uuid.v4()), resetPassword: uniqueId, resetPasswordSent: new Date()}, function(err, result){
+    User.update ({ user: email },{resetPassword: uniqueId, resetPasswordSent: new Date()}, function(err, result){
       if (err) {
         req.flash('userErr', 'There was a problem. Please try again.');
         return res.redirect(303, 'back');
       }          
       emailer.resetPw(email, uniqueId, req, function(err) {
+        if (err) console.log("err "+err);
         req.flash('success', "Please check your email for instructions.");
         return res.redirect(303, 'back');
       });          
@@ -275,8 +256,55 @@ exports.newPw = function newPw(req, res, next) {
         });
       });    
   });
+};
+
+exports.editUser = function editUser(req, res, next) {
+  if (! req.params.editFunction && 
+    (req.params.editFunction == "edit-name" || req.params.editFunction == "edit-pw")) {
+    return res.redirect(303, 'back');
+  }
   
+  if (req.params.editFunction == "edit-name") {
+    req.assert('name', 'Please enter your name').notEmpty();
+    var fields = {name:req.body.name};
+  }
   
+  if (req.params.editFunction == "edit-pw") {
+    req.assert('password', 'Please enter your current password').notEmpty();
+    req.assert('newPassword', 'Password should be 8 to 20 characters').len(8, 20);
+    req.assert('confirmNewPassword', 'Passwords do not match').equals(req.body.newPassword);
+    var fields = {password:createHash(req.body.newPassword)};
+  }
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+    if (req.params.editFunction == "edit-name") 
+      req.flash('editName', 'true');
+    if (req.params.editFunction == "edit-pw")
+      req.flash('editPw', 'true');
+    req.flash('errors', mappedErrors);
+    req.flash('name', req.session.user.name);
+    return res.redirect(303, 'back');
+  }
+  
+  User.update({user:req.session.user.user},fields, function(err, result) {
+    if (err) {
+      req.flash('userErr', 'There was a problem. Please try again.');
+      req.flash('name', req.session.user.name);
+      return res.redirect(303, 'back');
+    }
+    if (req.params.editFunction == "edit-name") {
+      req.session.user.name = req.body.name; 
+      req.flash('editName', 'false');
+    }
+     
+    if (req.params.editFunction == "edit-pw") {
+      req.flash('editPw', 'false');
+      req.flash('editPwSuccess', 'true');
+    }
+      
+    return res.redirect(303, 'back');
+  });  
 };
 
 exports.deleteInstancesByEmail = function deleteInstancesByEmail(req, res, next) {
