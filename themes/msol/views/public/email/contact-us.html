@@ -1,0 +1,12 @@
+{% extends "public/layout-email.html" %}
+
+{% block body %}
+
+You received a message from: <br/><br/>
+
+{% if name %}{{name}}<br/>{% endif %}
+{{email}}<br/><br/>
+
+{{message}}
+
+{% endblock %}

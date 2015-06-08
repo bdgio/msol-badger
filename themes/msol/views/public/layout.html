@@ -69,7 +69,6 @@
       {% block main %}{% endblock %}
       </div>
     </div>
-    
     <footer>
       <div class="footer navbar navbar-inverse navbar-fixed-bottom">
         <div class="container-fluid">
@@ -87,7 +86,7 @@
             <ul class="nav navbar-nav">
               <li class="{%if active == 'about'%}active{%endif%}"><a href="/about">About</a></li>
               <li class="{%if active == 'faq'%}active{%endif%}"><a href="/faq">FAQ</a></li>
-              <li class="disabled"><a href="#"> Contact Us</a></li>
+              <li class="{%if active == 'contact'%}active{%endif%}"> <a href="/contact-us">Contact Us</a></li>
               <li class="{%if active == 'terms'%}active{%endif%}"><a href="/terms"> Terms and Policies</a></li>
             </ul>
           </div><!-- /.navbar-collapse -->
