@@ -631,11 +631,14 @@ exports.findAllSortOptions = function findAllSortOptions(req, res, next) {
     if (err) return next(err);
     badgesList = badges.sort(compareName);
     if (option == "track") {
+
       var i = 0;
       _.each(badgesList,function(badge){
         if (!badge.tags || badge.tags.length == 0) {
-          i++
+          i++;
           if (i == badges.length) {
+            req.badgesTagged = tags.sort(compareName);
+            req.earnSort = "track";
             return next();
           }
         }
@@ -653,8 +656,8 @@ exports.findAllSortOptions = function findAllSortOptions(req, res, next) {
                 tags[tagIndex]['badges'].push(badge);
               }
             j++;
-            if (j == badge.tags.length) {
-              i++
+            if (j == badge.tags.length) {              
+              i++;
               if (i == badges.length) {
                 req.badgesTagged = tags.sort(compareName);
                 req.earnSort = "track";
