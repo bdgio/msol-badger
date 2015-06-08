@@ -31,6 +31,11 @@ var createHash = function(password){
  return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
 }
 
+var isValidPassword = function(user, password){
+  return bcrypt.compareSync(password, user.password);
+}
+
+
 exports.logout = function logout(req, res) {
   req.session.destroy(function () {
     return res.redirect('/');
@@ -276,6 +281,8 @@ exports.editUser = function editUser(req, res, next) {
     var fields = {password:createHash(req.body.newPassword)};
   }
   
+  //add validate current pw here.
+  
   var mappedErrors = req.validationErrors(true);
   if (mappedErrors) {
     if (req.params.editFunction == "edit-name") 
@@ -378,3 +385,28 @@ exports.retrieveUser = function retrieveUser() {
     });
   };
 };
+
+exports.contactUs = function contactUs(req,res) {
+  
+  req.assert('email', 'Please provide a valid email').notEmpty().isEmail();
+  req.assert('message', 'Please add your message').notEmpty();
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var email = req.body.email;
+    var message = req.body.message;
+    
+    emailer.contactUs(req, function(err) {
+      if (err) console.log("err "+err);
+      req.flash('success', "Thanks! Your message has been sent.");
+      return res.redirect(303, 'back');
+    });
+  }
+  
+  
+  
+}

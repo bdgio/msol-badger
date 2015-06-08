@@ -82,6 +82,18 @@ exports.resetPw = function (req, res) {
   });
 }
 
+exports.contactUs = function (req, res, next) {
+  return res.render('public/contact-us.html', {
+    page: 'contact',
+    title: "Contact Us",
+    success: req.flash('success'),
+    errors: req.flash('errors'),
+    user: req.session.user,
+    access: req.session.access,
+    csrf: req.session._csrf
+  });
+}
+
 
 exports.newBadgeForm = function (req, res) {
   return res.render('admin/create-or-edit-badge.html', {
