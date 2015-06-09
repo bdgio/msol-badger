@@ -31,7 +31,7 @@
 <div class="row row-spacer-tb">
   {% for badge in programBadges %}
   <div class="col-sm-2 text-center">
-    <a href="/badge/{{ badge.shortname}}"><div class="explore-issuer">
+    <a href="/badge/{{ badge.shortname}}"><div class="badge-list">
       <img class="badge-image" src="{{ badge.imageDataURI() }}">
       <p>{{badge.name}}</p> 
     </div></a>
@@ -49,7 +49,7 @@
   <div class="row row-spacer-tb">
     {% for badge in similarBadges %}
     <div class="col-sm-2 text-center">
-      <a href="/badge/{{ badge.shortname}}"><div class="explore-issuer">
+      <a href="/badge/{{ badge.shortname}}"><div class="badge-list">
         <img class="badge-image" src="{{ badge.imageDataURI() }}">
         <p>{{badge.name}}</p> 
       </div></a>

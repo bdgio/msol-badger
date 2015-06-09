@@ -44,4 +44,13 @@
   });
   
   $('#pw-edit-success').delay(3000).fadeOut();
+  
+  $(".faq-ans").hide();
+  $(".faq-ques").click(function(evt){
+    $(this).addClass("active");
+    $(".faq-ans").hide();
+    $(this).next(".faq-ans").show();
+  });
+  
+  
 })(jQuery);

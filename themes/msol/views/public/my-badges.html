@@ -5,7 +5,7 @@
 {% block main %}
 
 <div class="row">
-  <div class="col-lg-10">
+  <div class="col-lg-12">
     <h3>My Badges</h3>
     <br/>
   </div>
@@ -97,14 +97,14 @@
 <div class="row">
   {% for badge in badges %}
     <div class="col-sm-3 text-center">
-      <div class="explore-issuer{% if badge.unclaimed == true %} unclaimed-badge{% endif %}">
+      <div class="badge-list{% if badge.unclaimed == true %} unclaimed-badge{% endif %}">
         
         {% if badge.unclaimed == true %}
           <div class="new-badge-flag">New</div>
           <img class="badge-image fade" src="{{ badge.image | dataurl('image/png') }}">
           <div class="accept-badge"><a href="/badge-accept/{{badge.claimCode}}">Accept</a></div>
           <div type="button" class="reject-badge text-center" data-toggle="modal" data-target="#rejectModal">Reject</div>
-          <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModal" aria-hidden="true">
             <div class="modal-dialog modal-sm">
               <div class="modal-content">
                 <div class="modal-header">
