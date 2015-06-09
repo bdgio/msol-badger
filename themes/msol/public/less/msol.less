@@ -61,6 +61,10 @@ img, .badge-class {
   z-index: 0;
 }
 
+.spacer-t10 {
+  margin-top: 20px;
+}
+
 .row-spacer-tb {
   display: block;
   margin-top: 20px;
@@ -123,7 +127,7 @@ img, .badge-class {
 
 /* Explore */
 
-.explore-issuer {
+.badge-list {
   border: 1px solid @gray;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
@@ -133,11 +137,11 @@ img, .badge-class {
   height: 150px;
 }
 
-.explore-issuer img {
+.badge-list img {
   width: 45%;
 }
 
-.explore-issuer p {
+.badge-list p {
   font-size: @font-size-base;
   padding-top: 10px;
 }
@@ -244,24 +248,58 @@ img.fade {
   color: #FFF;
 }
 
-/*.reject-badge {
-  position: absolute;
-  z-index: 99;
-  top: 90px;
-  left: 50%;
-}*/
 
 .accept-badge a{
   color: #FFF;
 }
 
-/*.reject-badge a:hover {
-  color: @link-hover-color;
-}*/
 
 .accept-badge:hover,.reject-badge:hover {
   opacity: 1;
   filter: alpha(opacity=100);
+}
+
+/* FAQ */
+
+.faq-ques {
+  color:@link-color;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.faq-ques:hover {
+  color:@link-hover-color;
+}
+
+@media (min-width: 980px) (max-width: 1279px) {
+  .badge-list img {
+    margin-top: 20px;
+    width: 80%;
+    }
+}
+
+
+/* Ipad, tablets */ 
+
+@media (min-width: 768px) and (max-width: 979px) {
+
+  .badge-list img {
+    margin-top: 20px;
+    width: 60%;
+  }
+  
+  .navbar-collapse.collapse {
+         display: none !important;
+     }
+     .navbar-collapse.collapse.in {
+         display: block !important;
+     }
+     .navbar-header .collapse, .navbar-toggle {
+         display:block !important;
+     }
+     .navbar-header {
+         float:none;
+     }
 }
 
 /* Extra Small Devices, Phones */ 
@@ -308,6 +346,27 @@ img.fade {
   .involved {
     padding-left: 80px;
   }
+  
+  .org-details img {
+    width: 45%;
+  }
+  
+  .badge-list {
+    padding: 5px;
+    height: 170px;
+  }
+
+  .badge-list img {
+    width: 35%;
+  }
+  
+  .accept-badge {
+    top: 30px;
+  }
+
+  .reject-badge {
+    top: 60px;
+  }
 }
 
 /* Custom, iPhone Retina */ 
@@ -352,5 +411,14 @@ img.fade {
 
        .involved {
          padding-left: 80px;
+       }
+       
+       .badge-list {
+         padding: 5px;
+         height: 170px;
+       }
+
+       .badge-list img {
+         width: 40%;
        }
 }

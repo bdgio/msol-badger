@@ -21,7 +21,7 @@
 <div class="row">
   {% for issuer in issuers %}
   <div class="col-sm-3 text-center">
-    <a href="/org/{{ issuer._id}}"><div class="explore-issuer">
+    <a href="/org/{{ issuer._id}}"><div class="badge-list">
       <img src="{{ issuer.image | dataurl('image/png') }}">
       <p>{{issuer.name}}</p> 
     </div></a>

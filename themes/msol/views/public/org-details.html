@@ -12,10 +12,10 @@
 </div>
 
 <div class="row org-details row-spacer-tb">
-  <div class="col-lg-2">
+  <div class="col-sm-2 pull-left">
     <img src="{{ issuer.image | dataurl('image/png') }}">
   </div>
-  <div class="col-lg-10">
+  <div class="col-sm-10 pull-left">
     <h4>{{issuer.name}}</h4>
     <p>{{issuer.description}}</p>
     {% if issuer.url %}<p><a href="{{issuer.url}}" target="_blank">{{issuer.url}}</a></p>{% endif %}
@@ -32,7 +32,7 @@
 <div class="row row-spacer-tb">
   {% for badge in badges %}
   <div class="col-sm-2 text-center">
-    <a href="/badge/{{ badge.shortname}}"><div class="explore-issuer">
+    <a href="/badge/{{ badge.shortname}}"><div class="badge-list">
       <img class="badge-image" src="{{ badge.imageDataURI() }}">
       <p>{{badge.name}}</p> 
     </div></a>
