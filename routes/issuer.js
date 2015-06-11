@@ -11,7 +11,7 @@ const method = util.method;
 const prop = util.prop;
 
 exports.findAll = function findAll(req, res, next) {
-  Issuer.find({}, {name: 1, programs: 1})
+  Issuer.find({}, {name: 1, programs: 1, image: 1, description: 1})
     .populate('programs')
     .exec(function (err, issuers) {
       if (err) return next(err);
@@ -32,6 +32,17 @@ exports.findById = function findById(req, res, next) {
     });
 };
 
+exports.findByBadgeProgram = function findByBadgeProgram(req, res, next) {
+  Issuer.find({programs: req.badge.program},{name:1})
+    .exec(function (err, issuer) {
+      if (err) return next(err);
+      if (!issuer)
+        return res.send(404);
+      req.issuer = issuer[0];
+      return next();
+    });
+};
+
 exports.findProgramById = function findProgramById(req, res, next) {
   Program.findById(req.param('programId'))
     .exec(function (err, program) {
@@ -43,7 +54,7 @@ exports.findProgramById = function findProgramById(req, res, next) {
     });
 };
 exports.findByAccess = function findByAccess(req, res, next) {
-  Issuer.findByAccess(req.session.user)
+  Issuer.findByAccess(req.session.user.user)
     .populate('programs')
     .exec(function (err, issuers) {
       if (err) return next(err);

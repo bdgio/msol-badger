@@ -3,9 +3,12 @@ const fs = require('fs');
 const logger = require('../lib/logger');
 const Badge = require('../models/badge');
 const BadgeInstance = require('../models/badge-instance');
+const Issuer = require('../models/issuer'); 
 const Work = require('../models/work');
+const User = require('../models/user');
 const util = require('../lib/util');
 const async = require('async');
+const emailer = require('../lib/emailer');
 
 function handleTagInput(input) {
   return (
@@ -237,6 +240,8 @@ function reportError(err) {
   return { status: 'error', error: err };
 }
 
+/* This runs when the user claims the badge */
+
 exports.awardToUser = function awardToUser(req, res, next) {
   var form = req.body;
   var email = (form.email || '').trim();
@@ -252,9 +257,11 @@ exports.awardToUser = function awardToUser(req, res, next) {
       return res.send({ status: 'not-found' });
 
     badge.awardOrFind(email, function (err, instance) {
+      logger.info("instance " + JSON.stringify(instance));
       if (err) return res.send(reportError(err));
       badge.save(function (err) {
         if (err) return res.send(reportError(err));
+        
         return res.send({
           status: 'ok',
           assertionUrl: instance.absoluteUrl('assertion')
@@ -264,7 +271,7 @@ exports.awardToUser = function awardToUser(req, res, next) {
   });
 };
 
-function reserveAndNotify(badge, evidenceFiles, email, issuedBy, callback) {
+function reserveAndNotify(req, badge, evidenceFiles, email, issuedBy, callback) {
   if (!util.isEmail(email))
     return callback(null, {email: email, status: 'invalid'});
   badge.reserveAndNotify({
@@ -275,11 +282,30 @@ function reserveAndNotify(badge, evidenceFiles, email, issuedBy, callback) {
     if (err) return callback(err);
     if (!claimCode)
       return callback(null, {email: email, status: 'dupe'});
-    return callback(null, {
-      email: email,
-      status: 'ok',
-      claimCode: claimCode
-    });
+      
+    User.findOne({user:email},function(err,userResult){
+      if (!userResult) {
+        emailer.newUserBadge(email, claimCode, req, function(err) {
+          if (err) console.log("err "+err);
+          return callback(null, {
+            email: email,
+            status: 'ok',
+            claimCode: claimCode
+          });
+        });  
+      }
+      else {
+        var name = userResult.name;
+        emailer.awardBadge(email, name, claimCode, req, function(err) {
+          if (err) console.log("err "+err);
+          return callback(null, {
+            email: email,
+            status: 'ok',
+            claimCode: claimCode
+          });
+        });
+      }
+    });      
   });
 }
 
@@ -294,8 +320,7 @@ exports.issueOneWithEvidence = function issueOneWithEvidence(req, res, next) {
       files = [files];
   } else
     files = [];
-
-  reserveAndNotify(badge, files, email, issuedBy, function(err, result) {
+  reserveAndNotify(req, badge, files, email, issuedBy, function(err, result) {
     if (err) return next(err);
     req.flash('results', [result]);
     return res.redirect(303, 'back');
@@ -322,6 +347,7 @@ exports.issueMany = function issueMany(req, res, next) {
     }).save(callback);
   }
 
+
   async.map(emails, addTask, function (err, results) {
     if (err) return next(err);
     req.flash('results', results);
@@ -331,7 +357,13 @@ exports.issueMany = function issueMany(req, res, next) {
 
 exports.findByClaimCode = function findByClaimCode(options) {
   return function (req, res, next) {
-    var code = req.body.code;
+    var code;
+    if (req.params.claimCode) {
+      code = req.params.claimCode;
+    }
+    else {
+      code = req.body.code;
+    }
     var normalizedCode = code.trim().replace(/ +/g, '-');
     Badge.findByClaimCode(normalizedCode, function (err, badge) {
       if (err) return next(err);
@@ -380,9 +412,75 @@ exports.findByShortName = function (options) {
   };
 };
 
+exports.findByUser = function findByUser(req, res, next) {
+  if (!req.session.user) {
+    return next();
+  }
+  
+  /* 
+  A single badge can be reserved (issued) to the same email more than once.
+  Reorganizing data so that there is a badge for each reservedFor instance.
+  */
+  
+  const email = req.session.user.user;
+  const badgesList = [], tmpBadges = [];
+  Badge.find({"claimCodes.reservedFor":email}, {_id:1, name:1, image:1, claimCodes:1}, function(err, badges){
+    if (err)
+      return next(err);
+    var i = 0;
+    async.eachSeries(badges, function iterator(badge, callback) {
+      async.eachSeries(badge.claimCodes, function iterator(claim, callback) {
+        if (claim.reservedFor == email && claim.refused == false) {
+          var unclaimed;
+          if (! claim.claimedBy) {
+            unclaimed = true
+          }
+          badgesList.push({_id:badge._id,name:badge.name,image:badge.image,unclaimed:unclaimed,claimCode:claim.code});
+          callback();
+        }
+        else {
+          callback();
+        }
+      },
+      function(err,result) {
+        callback();
+      });
+    }, function(err) {
+      req.badges = badgesList;
+      return next();
+    });
+  });  
+};
+
+exports.myBadgeAccept = function myBadgeAccept(req, res, next) {
+  var claimCode = req.params.claimCode;
+  var email = req.session.user.user;
+  
+  Badge.update({"claimCodes.code": claimCode},{
+    "$set": {"claimCodes.$.claimedBy": email}
+  }, function (err, result){
+    if (err) 
+      return res.redirect(303, 'back');
+    return res.redirect(303, 'back');
+  });
+}
+
+exports.myBadgeReject = function myBadgeReject(req, res, next) {
+  var claimCode = req.params.claimCode;
+  
+  Badge.update({"claimCodes.code": claimCode},{
+    "$set": {"claimCodes.$.refused": true}
+  }, function (err, result){
+    if (err) 
+      return res.redirect(303, 'back');
+    return res.redirect(303, 'back');
+  });
+}
+
+
 exports.confirmAccess = function confirmAccess(req, res, next) {
   const badge = req.badge;
-  const email = req.session.user;
+  const email = req.session.user.user;
   const hasAccess = badge.program &&
     badge.program.issuer &&
     badge.program.issuer.hasAccess(email);
@@ -406,12 +504,20 @@ exports.findById = function findById(req, res, next) {
 };
 
 exports.findByIssuers = function findByIssuers(req, res, next) {
-  const issuers = req.issuers;
+  var issuers = [];
+  if (req.issuers) issuers = req.issuers;
+  const issuer = req.issuer;
   const prop = util.prop;
   const wrap = util.objWrap;
 
-  if (!issuers.length)
-    return next();
+  if (!issuers.length) {
+    if (issuer) {
+      issuers.push(issuer);
+    }
+    else {
+      return next();
+    }
+  }
 
   const query = {
     '$or': issuers
@@ -422,7 +528,7 @@ exports.findByIssuers = function findByIssuers(req, res, next) {
       .map(wrap('program'))
   };
   Badge
-    .find(query, {image: 0})
+    .find(query, {})
     .populate('program')
     .exec(function (err, allBadges) {
       if (err) return next(err);
@@ -456,6 +562,31 @@ exports.findByIssuers = function findByIssuers(req, res, next) {
     });
 };
 
+exports.findProgramBadges = function findByIssuerBadge(req, res, next) {
+ Badge.find({program:req.badge.program, _id: { '$ne': req.badge._id }}, {name: 1, shortname: 1, image: 1},function (err, badges) {
+   if (err) return next(err);
+   req.programBadges = badges;
+   return next();
+ });  
+};
+
+exports.getSimilarByBadgeTags = function getSimilarByBadgeTags(req, res, next) {
+  const tags = req.badge.tags;
+
+  const noTags = !tags || tags.length == 0;
+
+  if (noTags)
+    return next();
+  
+  const query = { tags: { '$in': tags }, _id: { '$ne': req.badge._id } };
+  const projection = { name: 1, shortname: 1, image: 1 };
+  Badge.find(query, projection, function (err, badges) {
+    if (err) return next(err);
+    req.similarBadges = badges;
+    return next();
+  });
+};
+
 function parseLimit(limit, _default) {
   const DEFAULT = _default || 50;
   const intLimit = parseInt(limit, 10);
@@ -476,6 +607,98 @@ function makeSearchFn(term) {
     );
   };
 }
+
+exports.findAllSortOptions = function findAllSortOptions(req, res, next) {
+  
+  var tags = [], programs = [], option = req.params.option;
+  function compareName(a,b) {
+    if (a.name < b.name)
+    return -1;
+    if (a.name > b.name)
+    return 1;
+    return 0;
+  }
+  
+  function compareProgram(a,b) {
+    if (a.program < b.program)
+    return -1;
+    if (a.program > b.program)
+    return 1;
+    return 0;
+  }
+  
+  Badge.find({}, {name: 1, shortname: 1, program: 1, tags: 1, image: 1}, function(err,badges){
+    if (err) return next(err);
+    badgesList = badges.sort(compareName);
+    if (option == "track") {
+
+      var i = 0;
+      _.each(badgesList,function(badge){
+        if (!badge.tags || badge.tags.length == 0) {
+          i++;
+          if (i == badges.length) {
+            req.badgesTagged = tags.sort(compareName);
+            req.earnSort = "track";
+            return next();
+          }
+        }
+        else {
+          var j= 0;
+          _.each(badge.tags, function(tag){
+              if (_.findWhere(tags,{name:tag})) {
+                var tagIndex = tags.map(function(x) {return x.name; }).indexOf(tag);
+                tags[tagIndex]['badges'].push(badge);
+              }
+              else {
+                var tagIndex = tags.length++;
+                tags[tagIndex] = {name:tag};
+                tags[tagIndex]['badges'] = [];
+                tags[tagIndex]['badges'].push(badge);
+              }
+            j++;
+            if (j == badge.tags.length) {              
+              i++;
+              if (i == badges.length) {
+                req.badgesTagged = tags.sort(compareName);
+                req.earnSort = "track";
+                return next();
+              }
+            }
+          });
+        }
+      });
+      
+    } else if (option == "org") {
+      var i = 0;
+      _.each(badgesList,function(badge){
+        Issuer.findOne({programs: badge.program},{name:1}, function(err, issuer) {
+          var issuerName = issuer.name;
+          if (_.findWhere(programs,{name:issuerName})) {
+            var pIndex = programs.map(function(x) {return x.name; }).indexOf(issuerName);
+            programs[pIndex]['badges'].push(badge);
+          }
+          else {
+            var pIndex = programs.length++;          
+            programs[pIndex] = {name:issuerName};
+            programs[pIndex]['badges'] = [];
+            programs[pIndex]['badges'].push(badge);
+          }
+          i++;
+          if (i == badgesList.length) {
+            req.badgesPrograms = programs.sort(compareName);
+            req.earnSort = "org";
+            return next();
+          }
+        });
+      });
+    }
+    else {
+      req.badges = badgesList;
+      req.earnSort = "az";
+      return next();
+    }    
+  });  
+};
 
 exports.findAll = function findAll(req, res, next) {
   const page = req.page = parseInt(req.query.page, 10) || 1;

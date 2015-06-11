@@ -13,9 +13,6 @@
   <div class="col-lg-offset-1 col-lg-11">
     <form method="post" action="?" enctype="multipart/form-data">
       <input type="hidden" name="csrf" value="{{ csrf }}">
-
-
-    
         <div class="form-group">
           <label for="program">Program</label>
           <select id="program" name="program">
@@ -41,7 +38,7 @@
     </div>
 
     <div class="form-group">
-      {% if editing %}{{ badge | imageForBadge }}{% endif %}
+      {% if editing %}<div class="row"><div class="col-lg-4">{{ badge | imageForBadge }}</div></div>{% endif %}
       <label for="name">Name</label>
       <input
           id="name"
@@ -57,7 +54,7 @@
     </div>
 
     <div class="form-group">
-      <label for="description">Description</label>
+      <div><label for="description">Description</label></div>
       <textarea
           id="description"
           rows="5"
@@ -76,7 +73,7 @@
     </div>
 
     <div class="form-group">
-      <label for="criteria">Criteria</label>
+      <div><label for="criteria">Criteria</label></div>
       <textarea
           id="criteria"
           rows="5"
@@ -93,7 +90,7 @@
       <label for="tags">Tags</label>
       <input type="text" name="tags" id="tags" value="{{badge.tags | join(', ') | e}}">
       <span class="help-block">
-        Tags for the badge. Individual tags should be comma separated.
+        Tags for the badge. Individual tags should be comma separated with no space.
       </span>
     </div>
 

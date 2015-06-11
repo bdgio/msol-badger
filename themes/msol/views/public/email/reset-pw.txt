@@ -1,0 +1,12 @@
+We got a request to reset your Maine State of Learning password.
+
+You can reset it here: {{url}}
+
+Note: This link will expire in 7 days.
+
+If you ignore this message, your password won't be changed.
+
+If you didn't request a password reset, let us know help@mainestateoflearning.org
+
+Thanks,
+The Maine State of Learning Team

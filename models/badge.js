@@ -11,6 +11,7 @@ const async = require('async');
 const Schema = mongoose.Schema;
 const webhooks = require('../lib/webhooks');
 const s3 = require('../lib/s3');
+const logger = require('../lib/logger');
 
 const KID = '0-13';
 const TEEN = '13-18';
@@ -52,6 +53,10 @@ const ClaimCodeSchema = new Schema({
     type: String,
     required: false,
     trim: true,
+  },
+  refused: {
+    type: Boolean,
+    default: false 
   },
   issuedBy: {
     type: String,
@@ -600,7 +605,7 @@ Badge.prototype.reserveAndNotify = function reserveAndNotify(info, callback) {
       var claim = self.getClaimCode(claimCode);
       var finish = function(err) {
         if (err) return callback(err);
-        webhooks.notifyOfReservedClaim(email, claimCode, files.length);
+       // webhooks.notifyOfReservedClaim(email, claimCode, files.length);
         return callback(null, claimCode);
       };
 
@@ -657,6 +662,9 @@ Badge.prototype.awardOrFind = function awardOrFind(email, callback) {
         if (err) return callback(err);
         return callback(null, instance);
       });
+    }
+    else {
+      return callback(null, instance);
     }
   });
 };

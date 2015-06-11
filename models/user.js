@@ -16,6 +16,10 @@ var UserSchema = new Schema({
     unique: true,
     match: regex.email
   },
+  name: String,
+  password: String,
+  resetPassword: String,
+  resetPasswordSent: String,
 
   // `credit` is an object keyed by the shortname of a behavior with the
   // value being the amount of credit the user has for that behavior.

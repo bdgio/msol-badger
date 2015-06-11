@@ -1,9 +1,19 @@
+const _ = require('underscore');
+const request = require('request');
 const Issuer = require('../models/issuer');
+const User = require('../models/user');
 const BadgeInstance = require('../models/badge-instance');
 const env = require('../lib/environment');
 const persona = require('../lib/persona');
 const util = require('../lib/util');
 const async = require('async');
+const logger = require('../lib/logger');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcryptjs');
+const uuid = require('node-uuid');
+const emailer = require('../lib/emailer');
+const moment = require('moment');
 
 const FORBIDDEN_MSG = 'You must be an admin to access this page';
 
@@ -17,32 +27,291 @@ function getAccessLevel(email, callback) {
   });
 }
 
-exports.login = function login(req, res, next) {
-  const paths = {
-    super: '/admin',
-    issuer: '/issuer',
-  };
-  const assertion = req.body.assertion;
-  async.waterfall([
-    persona.verify.bind({}, assertion),
-    getAccessLevel,
-  ], function (err, result) {
-    if (err) return next(err);
-    // my kingdom for destructuring!
-    const email = result[0];
-    const access = result[1];
-    if (!access)
-      return res.send(403, FORBIDDEN_MSG);
-    req.session.user = email;
-    req.session.access = access;
-    return res.redirect(paths[access]);
-  });
-};
+var createHash = function(password){
+ return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+}
+
+var isValidPassword = function(user, password){
+  return bcrypt.compareSync(password, user.password);
+}
+
 
 exports.logout = function logout(req, res) {
   req.session.destroy(function () {
     return res.redirect('/');
   });
+};
+
+exports.signup = function signup(req,res,next) {
+  
+  req.assert('name', 'Please enter your name').notEmpty();
+  req.assert('password', 'Password should be 8 to 20 characters').len(8, 20);
+  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     req.flash('name', req.body.name);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var email = req.body.email;
+    var password = req.body.password;
+    var name = req.body.name;
+  }
+  
+  var createHash = function(password){
+   return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+  }  
+  User.findOne({ 'user' :  email }, function(err, user) {
+    if (err) {
+      logger.warn("User.findOne "+err);
+      return next(err);
+    }
+    if (user)
+    return res.redirect('/'); 
+    
+    var newUser = new User();
+    newUser.user = email;
+    newUser.password = createHash(password);
+    newUser.name = req.body.name;
+    newUser.save(function(err) {
+      if (err)
+        return done(err);  
+      req.session.user = newUser;
+      getAccessLevel(newUser.user, function(err,result) {
+        const access = result[1];
+        req.session.access = access;
+        if (access == "super") {
+          return res.redirect('/admin');
+        }
+        return res.redirect('/mybadges');
+      });
+    });
+  });
+}
+
+exports.login = function signup(req,res,next) {
+  
+  req.assert('email', 'Please provide a valid email').notEmpty().isEmail();
+  req.assert('password', 'Please enter your password').notEmpty();
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     req.flash('email', req.body.email);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var email = req.body.email;
+    var password = req.body.password;
+  }
+
+  var isValidPassword = function(user, password){
+    return bcrypt.compareSync(password, user.password);
+  }
+    
+  User.findOne({ 'user' :  email }, function(err, user) {
+    if (err) {
+      return next(err);
+    }
+    
+    if (!user) {// User has not been created. Either hasn't earned a badge or hasn't claimed first on yet.
+      req.flash('userErr', 'This user cannot be found. Please contact <a class="alert-link" href="mailto:help@mainestateoflearning.org">help@mainestateoflearning.org</a>');
+      req.flash('email', req.body.email);
+      return res.redirect(303, 'back');
+    }
+    
+    if (!user.password) { //Backwards compatible to Persona login
+      req.flash('loginErr', 'Login incorrect. Please try again.');
+      req.flash('email', req.body.email);
+      return res.redirect(303, 'back');
+    }
+    
+    if (!isValidPassword(user, password)) {
+      req.flash('loginErr', 'Login incorrect. Please try again.');
+      req.flash('email', req.body.email);
+      return res.redirect(303, 'back');
+    }
+    req.session.user = user;
+    getAccessLevel(user.user, function(err,result) {
+      const access = result[1];
+      req.session.access = access;
+      if (access == "super") {
+        return res.redirect('/admin');
+      }
+      return res.redirect('/mybadges');
+    });    
+  });
+}
+
+exports.forgotPw = function forgotPw(req,res) {
+  req.assert('email', 'Please provide a valid email for your account').notEmpty().isEmail();
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var email = req.body.email;
+  }
+  
+  var createHash = function(password){
+   return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+  }
+  
+  User.findOne({ 'user' :  email }, function(err, user) {
+    if (err) {
+      return next(err);
+    }
+    
+    if (!user) {// User has not been created. Either hasn't earned a badge or hasn't claimed first on yet.
+      req.flash('userErr', 'This user cannot be found. Please contact <a class="alert-link" href="mailto:help@mainestateoflearning.org">help@mainestateoflearning.org</a>');
+      return res.redirect(303, 'back');
+    }
+    
+    const uniqueId = uuid.v4();
+    
+    User.update ({ user: email },{resetPassword: uniqueId, resetPasswordSent: new Date()}, function(err, result){
+      if (err) {
+        req.flash('userErr', 'There was a problem. Please try again.');
+        return res.redirect(303, 'back');
+      }          
+      emailer.resetPw(email, uniqueId, req, function(err) {
+        if (err) console.log("err "+err);
+        req.flash('success', "Please check your email for instructions.");
+        return res.redirect(303, 'back');
+      });          
+    });
+   });
+};
+
+exports.checkUniqueId = function checkUniqueId(req, res, next) {
+
+  if (!req.params.uniqueId) {
+    req.flash('notFound', '404');
+    return next();
+  }
+
+  const uniqueId = req.params.uniqueId;
+  User.findOne({ 'resetPassword' :  uniqueId }, function(err, user) {
+
+    if (!user) {
+      req.flash('notFound', '404');
+      return next();
+    }
+
+    var daysSinceReset = moment().diff(Date.parse(user.resetPasswordSent), 'days');
+      
+    if (daysSinceReset > 7) {
+      req.flash('expired', "The password reset link has expired.");
+      return next();
+    }
+
+    req.uniqueId = uniqueId;
+    return next();
+  });  
+};
+
+exports.newPw = function newPw(req, res, next) {
+  
+  req.assert('password', 'Password should be 8 to 20 characters').len(8, 20);
+  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var password = req.body.password;
+    var uniqueId = req.body.uniqueId;
+  }
+  
+  var createHash = function(password){
+   return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+  }
+  
+  User.findOne({ resetPassword:uniqueId }, function(err, user) {
+    
+    if (err || !user) {
+      req.flash('userErr', 'There was a problem. Please try again.');
+      return res.redirect(303, 'back');
+    }
+  
+    User.update({resetPassword:uniqueId},{
+      password:createHash(password),
+      resetPassword:'', 
+      resetPasswordSent:''},
+      {upsert:false}, function(err,result){
+        if (err) {
+          req.flash('userErr', 'There was a problem. Please try again.');
+          return res.redirect(303, 'back');
+        }
+    
+        req.session.user = user;
+        getAccessLevel(user.user, function(err,result) {
+          const access = result[1];
+          req.session.access = access;
+          if (access == "super") {
+            return res.redirect('/admin');
+          }
+          return res.redirect('/mybadges');
+        });
+      });    
+  });
+};
+
+exports.editUser = function editUser(req, res, next) {
+  if (! req.params.editFunction && 
+    (req.params.editFunction == "edit-name" || req.params.editFunction == "edit-pw")) {
+    return res.redirect(303, 'back');
+  }
+  
+  if (req.params.editFunction == "edit-name") {
+    req.assert('name', 'Please enter your name').notEmpty();
+    var fields = {name:req.body.name};
+  }
+  
+  if (req.params.editFunction == "edit-pw") {
+    req.assert('password', 'Please enter your current password').notEmpty();
+    req.assert('newPassword', 'Password should be 8 to 20 characters').len(8, 20);
+    req.assert('confirmNewPassword', 'Passwords do not match').equals(req.body.newPassword);
+    var fields = {password:createHash(req.body.newPassword)};
+  }
+  
+  //add validate current pw here.
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+    if (req.params.editFunction == "edit-name") 
+      req.flash('editName', 'true');
+    if (req.params.editFunction == "edit-pw")
+      req.flash('editPw', 'true');
+    req.flash('errors', mappedErrors);
+    req.flash('name', req.session.user.name);
+    return res.redirect(303, 'back');
+  }
+  
+  User.update({user:req.session.user.user},fields, function(err, result) {
+    if (err) {
+      req.flash('userErr', 'There was a problem. Please try again.');
+      req.flash('name', req.session.user.name);
+      return res.redirect(303, 'back');
+    }
+    if (req.params.editFunction == "edit-name") {
+      req.session.user.name = req.body.name; 
+      req.flash('editName', 'false');
+    }
+     
+    if (req.params.editFunction == "edit-pw") {
+      req.flash('editPw', 'false');
+      req.flash('editPwSuccess', 'true');
+    }
+      
+    return res.redirect(303, 'back');
+  });  
 };
 
 exports.deleteInstancesByEmail = function deleteInstancesByEmail(req, res, next) {
@@ -98,3 +367,46 @@ exports.findAll = function findAll(options) {
     });
   };
 };
+
+exports.retrieveUser = function retrieveUser() {
+  return function (req, res, next) {
+    var badge = req.badge;
+    var reservedInstance = _.findWhere(badge.claimCodes, {code: req.params.claimCode});
+    var email = reservedInstance.reservedFor;
+    User.findOne({user:email}, function(err,user){
+      if (user) {
+        req.existingUser = user;
+        return next();
+      }
+      else {
+        req.newEarnerEmail = email;
+        return next();
+      }
+    });
+  };
+};
+
+exports.contactUs = function contactUs(req,res) {
+  
+  req.assert('email', 'Please provide a valid email').notEmpty().isEmail();
+  req.assert('message', 'Please add your message').notEmpty();
+  
+  var mappedErrors = req.validationErrors(true);
+  if (mappedErrors) {
+     req.flash('errors', mappedErrors);
+     return res.redirect(303, 'back');
+  }
+  else {
+    var email = req.body.email;
+    var message = req.body.message;
+    
+    emailer.contactUs(req, function(err) {
+      if (err) console.log("err "+err);
+      req.flash('success', "Thanks! Your message has been sent.");
+      return res.redirect(303, 'back');
+    });
+  }
+  
+  
+  
+}

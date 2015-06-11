@@ -1,0 +1,54 @@
+{% extends "public/layout.html" %}
+
+{% block main %}
+
+<div class="row">
+  <div class="col-lg-6 col-lg-offset-3">
+    <h3>Contact Us</h3>
+    <br/>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-6 col-lg-offset-3">
+    {% if success|length %}
+      <div>{{success}}</div>
+    {% else %}
+      <form name="editPw" role="form" action="/contact-us" method="post">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="name" name="name" id="name"class="form-control"/>
+          <div class="text-danger">
+            {% for error in errors %}
+            {{error.name.msg}}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label><span class="required">*</span>
+          <input type="email" name="email" id="email" class="form-control" required/>
+          <div class="text-danger">
+            {% for error in errors %}
+            {{error.email.msg}}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Message</label><span class="required">*</span>
+          <textarea class="form-control" name="message" id="email" rows="3" required></textarea>
+          <div class="text-danger">
+            {% for error in errors %}
+            {{error.message.msg}}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <button class="btn btn-sm btn-primary sign-in">Send</button>
+          </div
+        </form>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

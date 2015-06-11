@@ -1,0 +1,18 @@
+{% extends "public/layout-email.html" %}
+
+{% block body %}
+
+We got a request to reset your Maine State of Learning password.<br/><br/>
+
+You can reset it here: <a href="{{url}}">{{url}}</a><br/><br/>
+
+Note: This link will expire in 7 days.<br/><br/>
+
+If you ignore this message, your password won't be changed.<br/><br/>
+
+If you didn't request a password reset, let us know <a href="mailto:help@mainestateoflearning.org">help@mainestateoflearning.org</a>.<br/><br/>
+
+Thanks,<br/>
+The Maine State of Learning Team<br/><br/>
+
+{% endblock %}

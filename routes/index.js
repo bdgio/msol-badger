@@ -3,6 +3,7 @@ var behavior = require('./behavior');
 var badge = require('./badge');
 var render = require('./render');
 var issuer = require('./issuer');
+var passportLib = require('passport');
 var api = require('./api');
 var undo = require('./undo');
 var stats = require('./stats');
@@ -28,7 +29,6 @@ function addClaimManagementRoutes(app, prefix) {
 
 exports.define = function defineRoutes(app) {
   /** Routes */
-  app.get('/', render.anonymousHome);
 
   app.all('/issuer*', user.requireAuth({
     level: 'issuer',
@@ -157,8 +157,49 @@ exports.define = function defineRoutes(app) {
   app.get('/program/meta/:programId', [
     issuer.findProgramById
   ], issuer.meta);
+  
+  app.get('/', issuer.findAll,render.explore);
+  app.get('/explore', issuer.findAll,render.explore);
+  app.get('/about', render.about);
+  app.get('/faq', render.faq);
+  app.get('/contact-us', render.contactUs);
+  app.post('/contact-us', user.contactUs);
+  
+  app.get('/mybadges/:editFunction',
+  [badge.findByUser
+  ], render.myBadges);
 
-  app.get('/claim', render.claim);
+  app.get('/mybadges', 
+  [badge.findByUser
+  ], render.myBadges);
+  
+  app.post('/mybadges/:editFunction', user.editUser);
+  
+  app.get('/badge-accept/:claimCode', badge.myBadgeAccept);
+  
+  app.get('/badge-reject/:claimCode', badge.myBadgeReject);
+  
+  app.get('/org/:issuerId', 
+  [issuer.findById, 
+  badge.findByIssuers
+  ], render.orgDetails);
+  
+  app.get('/badge/:shortname', 
+  [findBadgeByParamShortname, 
+  badge.findProgramBadges,
+  issuer.findByBadgeProgram,
+  badge.getSimilarByBadgeTags
+  ], render.badgeDetails);
+  
+  /* Earn Page */
+  app.get('/earn/:option?', badge.findAllSortOptions,render.earnList);
+  
+  app.get('/claim/:claimCode',[
+    badge.findByClaimCode(),
+    user.retrieveUser()
+  ], render.newUserClaim);
+
+ /* app.get('/claim', render.claim);
 
   app.post('/claim',[
     badge.findByClaimCode()
@@ -166,15 +207,24 @@ exports.define = function defineRoutes(app) {
 
   app.post('/claim/confirm',[
     badge.findByClaimCode()
-  ], badge.awardToUser);
+  ], badge.awardToUser);*/
 
+  app.post('/new-badge-earner', user.signup);
+  
   app.get('/404', render.notFound);
 
-  // User login/logout
+  // User login/logout/forgot password
   // -------------------
   app.get('/login', render.login);
   app.post('/login', user.login);
   app.post('/logout', user.logout);
+  app.get('/forgotpw', render.forgotPw);
+  app.post('/forgotpw', user.forgotPw);
+  app.get('/reset-pw/:uniqueId', [
+  user.checkUniqueId
+  ], render.resetPw);
+  
+  app.post('/reset-pw', user.newPw);
 
   // API endpoints
   // -------------

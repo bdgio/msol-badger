@@ -4,10 +4,19 @@ const util = require('./lib/util');
 const log = require('./lib/logger');
 const express = require('express');
 const flash = require('connect-flash');
+const mailMiddleware = require('./middlewares/mail');
 
 exports.cookieParser = function () {
   var secret = env.get('secret');
   return express.cookieParser(secret);
+};
+
+exports.setLocals = function setLocals() {
+  return function (req, res, next) {
+    req.siteUrl = res.locals.siteUrl = env.fullUrl('/');
+    req.nodeEnv = res.locals.nodeEnv = env.get('env');
+    return next();
+  }
 };
 
 exports.logger = function () {
@@ -187,3 +196,5 @@ exports.flash = function flashWithMessages() {
     return flashMiddleware(req, res, next);
   };
 };
+
+exports.mailHandler = mailMiddleware.mailHandler;

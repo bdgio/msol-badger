@@ -15,7 +15,6 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <link href="/css/admin.css" rel="stylesheet">
- <script type="text/javascript" src="{{ PERSONA_INCLUDE_JS_URL }}"></script>
     {% block header %}{% endblock %}
   </head>
   <body>
@@ -37,12 +36,11 @@
           <ul class="nav navbar-nav">
             <li class="{%if active == 'explore'%}active{%endif%}"><a href="/">Explore</a></li>
             <li class="{%if active == 'earn'%}active{%endif%}"><a href="/earn">Earn</a></li>
-            <li class="{%if active == 'levels'%}active{%endif%}"><a href="/level-up"> Level Up</a></li>
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
              {% if user %}
-             <li class="{%if active == 'my-badges'%}active{%endif%}"><a href="/my-badges"> My Badges</a></li>
+             <li class="{%if active == 'mybadges'%}active{%endif%}"><a href="/mybadges"> My Badges</a></li>
              {% if access == "super" %}
              <li class="{%if active == 'admin'%}active{%endif%}"><a href="/admin"> Admin</a></li>
              <li class="{%if active == 'issuer'%}active{%endif%}"><a href="/issuer"> Issue </a></li>
@@ -54,23 +52,7 @@
                 </form>
               </li>
               {% else %}
-             <!-- <li>
-                <a href="" class="disabled">Log In</a>
-                <form method="post" action="/login" class="login-form js-login-form">
-                  <input type="hidden" name="csrf" value="{{ csrf }}">
-                </form>
-              </li>-->
-              
-              <li>
-                <a href="#" class="js-persona-login">
-                    <span>Login</span>
-                  </a>
-
-                <form method="post" action="/login" class="js-persona-form">
-                  <input type="hidden" name="assertion" value="" class="js-persona-input">
-                  <input type="hidden" name="csrf" value="{{ csrf }}">
-                </form>
-              </li>
+             <li><a href="/login"> Login </a></li>
             {% endif %}
             
           </ul>
@@ -79,12 +61,13 @@
     </nav>
     
     <div id="body">
-      <div class="container-fluid">
+      <div class="body-fluid-container">
       {% block body %}{% endblock %}
+      </div>
+      <div class="container">
       {% block main %}{% endblock %}
       </div>
     </div>
-    
     <footer>
       <div class="footer navbar navbar-inverse navbar-fixed-bottom">
         <div class="container-fluid">
@@ -102,9 +85,7 @@
             <ul class="nav navbar-nav">
               <li class="{%if active == 'about'%}active{%endif%}"><a href="/about">About</a></li>
               <li class="{%if active == 'faq'%}active{%endif%}"><a href="/faq">FAQ</a></li>
-              <li class="{%if active == 'partners'%}active{%endif%}"><a href="/partners"> Partners</a></li>
-              <li class="disabled"><a href="#"> Contact Us</a></li>
-              <li class="{%if active == 'terms'%}active{%endif%}"><a href="/terms"> Terms and Policies</a></li>
+              <li class="{%if active == 'contact'%}active{%endif%}"> <a href="/contact-us">Contact Us</a></li>
             </ul>
           </div><!-- /.navbar-collapse -->
           <div class="row">
@@ -117,7 +98,19 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/common.js"></script>
-    <script src="/js/login.js"></script>
-    {% block footer %}{% endblock %}
+    {% block footer %}
+    {% if nodeEnv == "production" %}
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-43067975-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    {% endif %}
+    {% endblock %}
   </body>
 </html>

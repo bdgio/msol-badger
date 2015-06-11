@@ -4,13 +4,9 @@
 
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 140px;
+  margin-bottom: 120px;
 }
 
-/*.body .container-fluid {
-    padding-bottom: 200px;
-}*/
 
 /** Nav **/
 ul.navbar-nav {
@@ -18,6 +14,14 @@ ul.navbar-nav {
   padding-left: 15px;
   font-weight: bold;
   font-size: @font-size-large;
+  font-family: @font-family-base;
+}  
+
+ul.subnav {
+  padding-top: 10px;
+  padding-left: 15px;
+  font-weight: bold;
+  font-size: @font-size-base;
   font-family: @font-family-base;
 }
 
@@ -28,7 +32,7 @@ ul.navbar-nav {
 }
 
 .footer {
-height: 140px;
+height: 120px;
 }
 
 .footer .copyright {
@@ -38,13 +42,282 @@ height: 140px;
   vertical-align: bottom-text;
 }
 
+.body-fluid-container {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.required {
+  color: @brand-danger;
+  font-weight: bold;
+}
+
+img, .badge-class { 
+  width: 100%;
+  z-index: 0;
+}
+
+.spacer-t10 {
+  margin-top: 20px;
+}
+
+.row-spacer-tb {
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.row-spacer-b {
+  display: block;
+  margin-bottom: 60px;
+}
+
+/* About Page */
+
+.bluefiller {
+	background:#0085ca;
+}
+
+.bluefiller-text {
+	width:100%;
+	text-align:center;
+	color:white;
+	padding-top:15px;
+	padding-bottom:15px;
+	font-size:@font-size-large;
+	font-weight: bold;
+	vertical-align:top;
+}
+
+.how-it-works img, .who-benefits img {
+  width: 75%;
+}
+
+.how-it-works-desc img, .who-benefits-desc img {
+  display: none;
+}
+
+.who-benefits, .who-benefits-desc {
+  background:#8CD600;
+}
+
+.who-benefits {
+  padding-top: 30px;
+}
+
+.who-benefits-desc {
+  padding-bottom: 30px;
+}
+
+.pilot h4 {
+  padding: 0 50px;
+}
+
+.founders {
+  padding: 0 20px;
+}
+
+.founders img {
+  width: 75%;
+}
+
+/* Explore */
+
+.badge-list, .issuer-list {
+  border: 1px solid @gray;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 5px;
+  height: 150px;
+}
+
+.issuer-list { 
+  height: 200px;
+}
+
+.badge-list img, .issuer-list img {
+  width: 45%;
+}
+
+.badge-list p, .issuer-list p {
+  font-size: @font-size-base;
+  padding-top: 10px;
+}
+
+
+
+/* Org Details */
 
 /* Small Devices, Tablets */
   @media only screen and (max-width : 768px) {
+  
+  ul.subnav {
+    display: none;
+  }
+  
+  .about-row {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
+  
+  .what-it-is p {
+    padding: 15px 10px 0 10px;
+  }
+  
+  .how-it-works-desc img, .who-benefits-desc img {
+    display: block;
+    padding-top: 15px;
+    width: 30%;
+    margin: 0 auto;
+  }
+  
+  .how-it-works img, .who-benefits img {
+    display: none;
+  }
+  
+  .involved {
+    padding-left: 220px;
+  }
+}
+
+/* My Badges */
+
+.my-badges-name {
+  font-size: @font-size-h3;
+  font-family: @font-family-sans-serif;
+  font-weight: bold;
+}
+
+.edit-user-form {
+  border: 1px solid @gray;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.unclaimed-badge {
+  background-color: @gray-lighter;
+}
+
+img.fade {
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+}
+
+.new-badge-flag {
+  position: absolute;
+  z-index: 999;
+  background: @brand-warning;
+  color: #FFF;
+  font-size: @font-size-small;
+  border: 1px solid @brand-warning;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  padding: 1px 3px;
+  overflow: hidden;
+}
+
+.accept-badge {
+  position: absolute;
+  z-index: 99;
+  top: 50px;
+  left: 33%;
+  background: @blue;
+  width: 35%;
+  padding: 5px;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+  cursor: pointer;
+}
+
+.reject-badge {
+  position: absolute;
+  z-index: 99;
+  top: 80px;
+  left: 33%;
+  background: @gray-light;
+  width: 35%;
+  padding: 5px;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+  cursor: pointer;
+  color: #FFF;
+}
+
+
+.accept-badge a{
+  color: #FFF;
+}
+
+
+.accept-badge:hover,.reject-badge:hover {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+/* FAQ */
+
+.faq-ques {
+  color:@link-color;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.faq-ques:hover {
+  color:@link-hover-color;
+}
+
+@media (min-width: 980px) (max-width: 1279px) {
+  .badge-list img {
+    margin-top: 20px;
+    width: 80%;
+    }
+}
+
+
+/* Ipad, tablets */ 
+
+@media (min-width: 768px) and (max-width: 979px) {
+
+  .badge-list img {
+    margin-top: 20px;
+    width: 60%;
+  }
+  
+  .navbar-collapse.collapse {
+         display: none !important;
+     }
+     .navbar-collapse.collapse.in {
+         display: block !important;
+     }
+     .navbar-header .collapse, .navbar-toggle {
+         display:block !important;
+     }
+     .navbar-header {
+         float:none;
+     }
 }
 
 /* Extra Small Devices, Phones */ 
 @media only screen and (max-width : 480px) {
+
+  .lighthouse {
+    height: auto; 
+  }
+
+  ul.subnav, .subnavbar {
+    display: none;
+  }
   .footer img {
     display: none;
   }
@@ -54,9 +327,104 @@ height: 140px;
   .navbar-fixed-bottom {
     height: auto;
   }
+  
+  .about-row {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
+  
+  .what-it-is p, .bluefiller-text {
+    padding: 15px 10px 15px 10px;
+  }
+  
+  .how-it-works-desc img, .who-benefits-desc img {
+    display: block;
+    padding-top: 15px;
+    width: 75%;
+    margin: 0 auto;
+  }
+  
+  .how-it-works img, .who-benefits img {
+    display: none;
+  }
+  
+  .involved {
+    padding-left: 80px;
+  }
+  
+  .org-details img {
+    width: 45%;
+  }
+  
+  .badge-list {
+    padding: 5px;
+    height: 170px;
+  }
+
+  .badge-list img {
+    width: 35%;
+  }
+  
+  .accept-badge {
+    top: 30px;
+  }
+
+  .reject-badge {
+    top: 60px;
+  }
 }
 
 /* Custom, iPhone Retina */ 
 @media only screen and (max-width : 320px) {
+       .lighthouse {
+         height: auto; 
+       }
+
+       ul.subnav, .subnavbar {
+         display: none;
+       }
+       .footer img {
+         display: none;
+       }
+       .navbar-inverse .navbar-nav > li > a {
+         font-size: @font-size-small;
+       }
+       .navbar-fixed-bottom {
+         height: auto;
+       }
+
+       .about-row {
+         display: block;
+         margin-top: 10px;
+         margin-bottom: 0;
+       }
+
+       .what-it-is p, .bluefiller-text {
+         padding: 15px 10px 15px 10px;
+       }
+
+       .how-it-works-desc img, .who-benefits-desc img {
+         display: block;
+         padding-top: 15px;
+         width: 75%;
+         margin: 0 auto;
+       }
+
+       .how-it-works img, .who-benefits img {
+         display: none;
+       }
+
+       .involved {
+         padding-left: 80px;
+       }
        
+       .badge-list {
+         padding: 5px;
+         height: 170px;
+       }
+
+       .badge-list img {
+         width: 40%;
+       }
 }

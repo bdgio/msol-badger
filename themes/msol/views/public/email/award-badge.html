@@ -1,0 +1,26 @@
+{% extends "public/layout-email.html" %}
+
+{% block body %}
+
+Congrats {{name}}!<br/><br/>
+
+You’ve earned the {{badgeName}} badge. Now it’s time to claim it!<br/><br/>
+
+Simply claim your {{badgeName}} badge by clicking this link: {{url}}<br/><br/>
+
+A few things to note:
+
+<ul>
+  <li> You’ll want to make sure to use the email address that you just received this message to as your login.</li>
+  <li> Once you are logged in, head to the 'My Badges' page and click '<bold>Accept</bold>' on your badge. </li>
+  <li> Feel free to <a href="mailto:help@mainestateoflearning.org">contact us</a> if you have any questions or concerns.</li>
+</ul>
+<br/>
+Happy Learning!<br/><br/>
+
+The Maine State of Learning Team<br/><br/>
+
+<i>Maine State of Learning is an initiative which strives to provide learning opportunities to Maine citizens of all ages, recognize that learning through digital badges, and connect it to statewide proficiencies, career-pathways and personal goals. We're excited for your participation.</i>
+<br/><br/>
+
+{% endblock %}
