@@ -302,6 +302,26 @@ exports.faq = function faq(req, res) {
   });
 };
 
+exports.privacy = function privacy(req, res) {
+  return res.render('public/privacy-policy.html', {
+    title: "Privacy Policy",
+    active: "privacy",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
+exports.terms = function terms(req, res) {
+  return res.render('public/terms.html', {
+    title: "Terms of Use",
+    active: "terms",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
 exports.myBadges = function myBadges(req, res) {
   if (! req.session.user) {
     res.status(404);
