@@ -355,25 +355,23 @@ exports.issueMany = function issueMany(req, res, next) {
   });
 };
 
-exports.findByClaimCode = function findByClaimCode(options) {
-  return function (req, res, next) {
-    var code;
-    if (req.params.claimCode) {
-      code = req.params.claimCode;
-    }
-    else {
-      code = req.body.code;
-    }
-    var normalizedCode = code.trim().replace(/ +/g, '-');
-    Badge.findByClaimCode(normalizedCode, function (err, badge) {
-      if (err) return next(err);
-      if (!badge)
-        return res.redirect('/claim?code=' + code + '&missing=true');
-      req.badge = badge;
-      req.claim = badge.getClaimCode(normalizedCode);
-      return next();
-    });
-  };
+exports.findByClaimCode = function findByClaimCode(req, res, next) {
+  var code;
+  if (req.params.claimCode) {
+    code = req.params.claimCode;
+  }
+  else {
+    code = req.body.code;
+  }
+  var normalizedCode = code.trim().replace(/ +/g, '-');
+  Badge.findByClaimCode(normalizedCode, function (err, badge) {
+    if (err) return next(err);
+    if (!badge)
+      return res.send(404);
+    req.badge = badge;
+    req.claim = badge.getClaimCode(normalizedCode);
+    return next();
+  });
 };
 
 // #TODO: refactor the following three fuctions into just one, probably

@@ -175,6 +175,13 @@ exports.define = function defineRoutes(app) {
   [badge.findByUser
   ], render.myBadges);
   
+  app.get('/my-badge/:claimCode',
+  [badge.findByClaimCode,
+  badge.findProgramBadges,
+  issuer.findByBadgeProgram,
+  badge.getSimilarByBadgeTags,
+  ], render.myBadge);
+  
   app.post('/mybadges/:editFunction', user.editUser);
   
   app.get('/badge-accept/:claimCode', badge.myBadgeAccept);
@@ -196,10 +203,10 @@ exports.define = function defineRoutes(app) {
   /* Earn Page */
   app.get('/earn/:option?', badge.findAllSortOptions,render.earnList);
   
-  app.get('/claim/:claimCode',[
+ /* app.get('/claim/:claimCode',[
     badge.findByClaimCode(),
     user.retrieveUser()
-  ], render.newUserClaim);
+  ], render.newUserClaim);*/
 
  /* app.get('/claim', render.claim);
 

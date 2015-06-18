@@ -268,6 +268,25 @@ exports.badgeDetails = function badgeDetails(req, res) {
   });  
 }
 
+exports.myBadge = function myBadge(req, res) {
+  if (! req.session.user) {
+    res.status(404);
+    return res.render('public/404.html', {});
+  }
+  return res.render('public/badge-details-earned.html', {
+    title: req.badge.name,
+    active: "mybadges",
+    issuer: req.issuer,
+    badge: req.badge,
+    claimCode: req.claim,
+    programBadges: req.programBadges,
+    similarBadges: req.similarBadges,
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });  
+}
+
 exports.earnList = function earnList(req, res) {
   return res.render('public/earn-list.html', {
     title: "Earn",
