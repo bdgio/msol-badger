@@ -33,7 +33,7 @@ exports.findById = function findById(req, res, next) {
 };
 
 exports.findByBadgeProgram = function findByBadgeProgram(req, res, next) {
-  Issuer.find({programs: req.badge.program},{name:1})
+  Issuer.find({programs: req.badge.program},{name:1,shortname:1})
     .exec(function (err, issuer) {
       if (err) return next(err);
       if (!issuer)

@@ -12,11 +12,12 @@
 </div>
 
 <div class="row org-details row-spacer-tb">
-  <div class="col-lg-2">
+  <div class="col-sm-2 pull-left">
     <img src="{{ badge.imageDataURI() }}">
   </div>
-  <div class="col-lg-10">
+  <div class="col-sm-10 pull-left">
     <h4>{{badge.name}}</h4>
+    <p><a href="/org/{{issuer.shortname}}">{{issuer.name}}</a></p>
     <p>{{badge.description}}</p>
     <p>{{badge.criteria.content}}</p>
   </div>
@@ -30,7 +31,7 @@
 
 <div class="row row-spacer-tb">
   {% for badge in programBadges %}
-  <div class="col-sm-2 text-center">
+  <div class="col-sm-3 text-center">
     <a href="/badge/{{ badge.shortname}}"><div class="badge-list">
       <img class="badge-image" src="{{ badge.imageDataURI() }}">
       <p>{{badge.name}}</p> 
@@ -48,7 +49,7 @@
 
   <div class="row row-spacer-tb">
     {% for badge in similarBadges %}
-    <div class="col-sm-2 text-center">
+    <div class="col-sm-3 text-center">
       <a href="/badge/{{ badge.shortname}}"><div class="badge-list">
         <img class="badge-image" src="{{ badge.imageDataURI() }}">
         <p>{{badge.name}}</p> 
