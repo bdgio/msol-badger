@@ -19,7 +19,7 @@
   - star.mainestateoflearning.org.crt
   - star.mainestateoflearning.org-fullchain.crt
   - COMODOExtendedValidationSecureServerCA2.pem
-  - GandiStandandSSLCA2.pem
+  - GandiStandardSSLCA2.pem
   tags: 
   - secure_tls
   - certs

@@ -25,11 +25,11 @@ aws-msol-prod
 secure-aws-msol-dev
 
 [secure-aws-msol-dev]
-bastion+msol-badger-00
+bastion+msol-badges-dev-00
 
 [aws-msol-prod:children]
 secure-aws-msol-prod
 
 [secure-aws-msol-prod]
-bastion+msol-badges-01
-bastion+msol-badges-02
+bastion+msol-badges-prod-01
+bastion+msol-badges-prod-02
