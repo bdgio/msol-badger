@@ -1,0 +1,15 @@
+---
+- name: start msol
+  service: name=msol state=started enabled=yes
+
+- name: stop msol
+  service: name=msol state=stopped enabled=yes
+
+- name: disable msol
+  service: name=msol state=stopped enabled=no
+
+- name: restart msol
+  service: name=msol state=restarted enabled=yes
+
+- name: wait for {{msol__service}} port
+  wait_for: port={{msol__port}} delay=10
