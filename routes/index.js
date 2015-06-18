@@ -181,8 +181,8 @@ exports.define = function defineRoutes(app) {
   
   app.get('/badge-reject/:claimCode', badge.myBadgeReject);
   
-  app.get('/org/:issuerId', 
-  [issuer.findById, 
+  app.get('/org/:shortname', 
+  [issuer.findByShortname, 
   badge.findByIssuers
   ], render.orgDetails);
   

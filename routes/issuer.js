@@ -20,6 +20,18 @@ exports.findAll = function findAll(req, res, next) {
     });
 };
 
+exports.findByShortname = function findByShortname(req, res, next) {
+  Issuer.findOne({shortname: req.param('shortname')})
+    .populate('programs')
+    .exec(function (err, issuer) {
+      if (err) return next(err);
+      if (!issuer)
+        return res.send(404);
+      req.issuer = issuer;
+      return next();
+    });
+};
+
 exports.findById = function findById(req, res, next) {
   Issuer.findById(req.param('issuerId'))
     .populate('programs')
