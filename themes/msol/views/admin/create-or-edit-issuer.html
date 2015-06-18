@@ -32,13 +32,23 @@
   </div>
 
   <div class="form-group">
-    <label for="contact">Contact (optional)</label>
+    <label for="contact">Contact (optional) </label>
     <input
        id="contact"
        type="email"
        name="contact"
        value="{{ issuer.contact | default('') }}"
        placeholder="admin@example.org">
+  </div>
+  
+  <div class="form-group">
+    <label for="contact">Phone Number (optional) </label>
+    <input
+       id="phone"
+       type="text"
+       name="phone"
+       value="{{ issuer.phone | default('') }}"
+       placeholder="401-555-1212">
   </div>
 
   <div class="form-group">

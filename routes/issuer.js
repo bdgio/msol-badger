@@ -81,6 +81,7 @@ function makeIssuer(issuer, form, image) {
   _.extend(issuer, {
     name: form.name,
     contact: form.contact,
+    phone: form.phone,
     url: form.url,
     description: form.description,
   });
