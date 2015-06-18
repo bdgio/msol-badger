@@ -32,7 +32,7 @@
 
 <div class="row row-spacer-tb">
   {% for badge in badges %}
-  <div class="col-sm-2 text-center">
+  <div class="col-sm-3 text-center">
     <a href="/badge/{{ badge.shortname}}"><div class="badge-list">
       <img class="badge-image" src="{{ badge.imageDataURI() }}">
       <p>{{badge.name}}</p> 
