@@ -47,6 +47,10 @@ const IssuerSchema = new Schema({
     trim: true,
     match: regex.email
   },
+  phone: {
+    type: String,
+    trim: true
+  },
   url: {
     type: String,
     trim: true,
