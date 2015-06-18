@@ -1,0 +1,10 @@
+---
+- user: name=bug uid={{base__bug_id}} groups=sudo,wheel shell=/bin/bash createhome=yes state=present
+  tags: bug
+
+- authorized_key: user=bug state=present key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN87Nz9WE38Jr80t9H/kRr6YxYoyAZhwXUcIfRepzwnjFU2nIWMVDolFFiVSCQ5s12IJqSZrVzx97wVbSv83n8w8c7Aioxurx+gbhT0YiklhghDjaDtxOBoAlYcI0KMqG98KRDPM4EzUbNrjVLZMOPBBxRBlZ5Tine71O7E6IPyr+Q3ejJntQKLzyqZh6vQckkCiehEp4m8CVdbRmAluwVLwb0FSgOV0cCVNdNNhoTI+wpCuuXDYbju5TaRUCSwZa53NIt4h0noUXfWLRe84t+7HnGuKA5wbNY0wSqsSL1RxHrxLfH9vJKWG5x6jg1JizedCGCjx9+sY0S/2HhyVcb bug@knightlabs.com"
+  tags: bug
+
+- name: add key to ubuntu user for setup
+  authorized_key: user=ubuntu state=present key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDN87Nz9WE38Jr80t9H/kRr6YxYoyAZhwXUcIfRepzwnjFU2nIWMVDolFFiVSCQ5s12IJqSZrVzx97wVbSv83n8w8c7Aioxurx+gbhT0YiklhghDjaDtxOBoAlYcI0KMqG98KRDPM4EzUbNrjVLZMOPBBxRBlZ5Tine71O7E6IPyr+Q3ejJntQKLzyqZh6vQckkCiehEp4m8CVdbRmAluwVLwb0FSgOV0cCVNdNNhoTI+wpCuuXDYbju5TaRUCSwZa53NIt4h0noUXfWLRe84t+7HnGuKA5wbNY0wSqsSL1RxHrxLfH9vJKWG5x6jg1JizedCGCjx9+sY0S/2HhyVcb bug@knightlabs.com"
+  tags: bug

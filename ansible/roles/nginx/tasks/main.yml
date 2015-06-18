@@ -1,0 +1,118 @@
+---
+- apt: name={{item}} state=latest update_cache=yes
+  with_items:
+  - libpcre3
+  - libpcre3-dev
+  - openssl
+  - libssl-dev
+  - make
+  tags: 
+  - nginx
+
+- group: name=nginx gid={{nginx__service_id}} state=present
+  tags: 
+  - nginx
+
+- user: name=nginx uid={{nginx__service_id}} group=nginx shell=/bin/bash createhome=yes state=present
+  tags: 
+  - nginx
+
+- copy: src=etc_security_limits.d_nginx.conf dest=/etc/security/limits.d/nginx.conf
+  tags: 
+  - nginx
+
+- get_url: url=http://nginx.org/download/nginx-{{nginx__version}}.tar.gz 
+          dest=/usr/local/src/nginx-{{nginx__version}}.tar.gz
+  tags: 
+  - nginx
+
+- get_url: url=http://nginx.org/download/nginx-{{nginx__version}}.tar.gz.asc
+           dest=/usr/local/src/nginx-{{nginx__version}}.tar.gz.asc
+  tags:
+  - nginx
+
+# - command: gpg --verify /usr/local/src/nginx-{{nginx__version}}.tar.gz.asc
+#   tags:
+#   - nginx
+#   - infrastructure
+
+- command: tar -xzf /usr/local/src/nginx-{{nginx__version}}.tar.gz -C /usr/local/src 
+           creates=/usr/local/src/nginx-{{nginx__version}}
+  tags:
+  - nginx
+
+# TODO: clean before configure?
+# TODO: creates clauses for extraction, configure, make, make install?
+- command: ./configure --with-http_ssl_module --with-http_spdy_module --prefix=/usr/local/nginx-{{nginx__version}} --conf-path=/etc/nginx/nginx.conf  --user=nginx --group=nginx 
+           chdir=/usr/local/src/nginx-{{nginx__version}}
+           creates=/usr/local/src/nginx-{{nginx__version}}/Makefile
+  register: configured
+  tags: 
+  - nginx
+
+- command: make chdir=/usr/local/src/nginx-{{nginx__version}}
+  when: configured.changed
+  tags: 
+  - nginx
+
+- command: make install chdir=/usr/local/src/nginx-{{nginx__version}}
+  when: configured.changed
+  notify: 
+  - restart nginx
+  tags: 
+  - nginx
+
+- file: name=/usr/local/nginx-{{nginx__version}} owner=nginx group=nginx state=directory recurse=yes
+  tags: 
+  - nginx
+
+- file: path=/etc/nginx/{{item}} state=directory owner=nginx group=nginx mode=0755
+  with_items:
+  - sites-available
+  - sites-enabled
+  tags:
+  - nginx
+
+- file: name=/etc/nginx owner=nginx group=nginx state=directory recurse=yes
+  tags: 
+  - nginx
+
+- copy: src=etc_nginx_nginx.conf dest=/etc/nginx/nginx.conf owner=nginx group=nginx mode=0644
+  notify: 
+  - restart nginx
+  tags:
+  - nginx
+  - nginx+conf
+
+- file: name=/var/log/nginx owner=nginx group=nginx state=directory recurse=yes
+  tags: 
+  - nginx
+
+- copy: src=etc_init.d_nginx dest=/etc/init.d/nginx owner=root group=root mode=0755
+  notify: 
+  - restart nginx
+  tags: 
+  - nginx
+
+- command: update-rc.d nginx defaults 20 creates=/etc/rc2.d/S20nginx
+  tags:
+  - nginx
+
+- file: src=/usr/local/nginx-{{nginx__version}} dest=/usr/local/nginx state=link
+  tags: 
+  - nginx
+
+- file: path=/usr/local/nginx-{{item}} state=absent
+  with_items: $nginx__previous_versions
+  tags: 
+  - nginx
+
+- file: path=/usr/local/src/nginx-{{item}} state=absent
+  with_items: $nginx__previous_versions
+  tags:
+  - nginx
+
+- file: path=/usr/local/src/nginx-{{item}}.tar.gz state=absent
+  with_items: $nginx__previous_versions
+  tags:
+  - nginx

@@ -1,0 +1,3 @@
+---
+- user: name=kayaelle state=absent remove=yes
+  tags: kayaelle

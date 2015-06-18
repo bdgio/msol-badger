@@ -1,0 +1,12 @@
+---
+nginx__service: nginx
+nginx__service_id: 2002
+
+nginx__port: 80
+nginx__secure_port: 443
+
+nginx__version: 1.9.2
+nginx__previous_versions:
+# - 1.7.4
+# - 1.7.10
+# - 1.7.12

@@ -1,0 +1,3 @@
+---
+ansible_apt_update: false
+ansible_apt_upgrade: false

@@ -1,0 +1,86 @@
+---
+- user: name=ubuntu uid={{base__ubuntu_id}} state=present
+  tags:
+  - base
+
+- group: name=wheel gid={{base__wheel_id}} state=present
+  tags: 
+  - base
+
+- copy: src=etc_pam.d_su dest=/etc/pam.d/su
+  tags: 
+  - base
+  - base+conf
+  - conf
+
+- copy: src=etc_skel_.bashrc dest=/etc/skel/.bashrc
+  tags: 
+  - base
+  - base+conf
+  - conf
+
+- copy: src=etc_bash.bashrc dest=/etc/bash.bashrc
+  tags: 
+  - base
+  - base+conf
+  - conf
+
+- template: src=etc_ssh_sshd_config dest=/etc/ssh/sshd_config owner=root group=root mode=0644
+  tags: 
+  - base
+  - base+conf
+  - conf
+  notify:
+  - reload sshd
+
+- copy: src=etc_sudoers dest=/etc/sudoers owner=root group=root mode=0440
+  tags: 
+  - base
+  - base+conf
+  - conf
+
+- template: src=etc_hostname dest=/etc/hostname owner=root group=root mode=0644
+  notify: ... restart host ...
+  tags:
+  - base
+  - base+conf
+  - conf
+  - hostname
+
+- template: src=etc_hosts dest=/etc/hosts owner=root group=root mode=0644
+  when: inventory_hostname != "bastion.klb.io"
+  tags:
+  - base
+  - base+conf
+  - conf
+  - hostname
+
+- include: users/bug.yml
+- include: users/kayaelle.yml
+
+- command: apt-get update
+  tags: 
+  - base
+  - upgrade
+  when: ansible_apt_update
+
+- command: apt-get -y upgrade
+  tags:
+   - base
+   - upgrade
+  when: ansible_apt_upgrade
+
+- apt: pkg={{item}} state=latest install_recommends=yes update_cache=yes
+  with_items:
+  - unzip
+  - git
+  - ntp
+  tags:
+  - base
+
+- file: path={{item}} src=/usr/share/zoneinfo/US/Eastern state=link force=yes
+  with_items:
+  - /etc/timezone
+  - /etc/localtime
+  tags:
+  - base

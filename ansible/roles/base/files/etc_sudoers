@@ -1,0 +1,30 @@
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# Please consider adding local content in /etc/sudoers.d/ instead of
+# directly modifying this file.
+#
+# See the man page for details on how to write a sudoers file.
+#
+
+## Defaults ##
+
+Defaults  !env_reset
+Defaults  !requiretty
+Defaults  visiblepw
+# Defaults  secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+## Host Aliases ##
+
+## User Aliases ##
+
+## Command Aliases ##
+
+## User Privileges ##
+
+root    ALL=(ALL)   ALL
+%sudo   All=(ALL)   ALL
+%wheel  ALL=(ALL)   NOPASSWD: ALL
+
+## Read drop-in files from /etc/sudoers.d (the # here does not mean a comment) ##
+#includedir /etc/sudoers.d

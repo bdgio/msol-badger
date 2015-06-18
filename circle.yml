@@ -1,7 +1,12 @@
-# dependencies:
-#   override:
-#     - bundle install: 
-#         timeout: 3600 # fail if command has no output for 60 minutes
+dependencies:
+  pre: 
+    - sudo apt-get install software-properties-common
+    - sudo apt-add-repository ppa:ansible/ansible
+    - sudo apt-get update
+    - sudo apt-get install ansible
+  override:
+    - bundle install: 
+        timeout: 3600 # fail if command has no output for 60 minutes
 
 # test:
 #   override:
@@ -9,9 +14,17 @@
 
 ## Customize deployment commands
 deployment:
+  development: 
+    branch: develop
   production:
     branch: master
     codedeploy:
       msol-badger:
         deployment_group: msol-badger-production-deployment-group
 
+
+
+# sudo apt-get install software-properties-common
+# $ sudo apt-add-repository ppa:ansible/ansible
+# $ sudo apt-get update
+# $ sudo apt-get install ansible

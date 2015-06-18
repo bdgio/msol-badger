@@ -1,0 +1,19 @@
+---
+- name: configure aws bastion
+  remote_user: ubuntu
+  hosts: bastion
+  gather_facts: true
+  sudo: true
+
+  # vars:
+  # - ansible_apt_update: true
+  # - ansible_apt_upgrade: false
+
+  roles:
+  - base
+  # - newrelic
+
+  tasks: 
+  - template: src=templates/aws/bastion/etc_hosts dest=/etc/hosts
+    tags: 
+    - bastion

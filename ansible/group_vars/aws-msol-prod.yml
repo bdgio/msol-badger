@@ -1,0 +1,7 @@
+---
+
+msol__environment: production
+
+msol__openbadger_host: mainestateoflearning.org
+msol__openbadger_protocol: https
+msol__openbadger_port: 3000

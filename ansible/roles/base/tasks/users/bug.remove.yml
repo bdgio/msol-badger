@@ -1,0 +1,3 @@
+---
+- user: name=bug state=absent remove=yes
+  tags: bug
