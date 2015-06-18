@@ -21,6 +21,7 @@ todo.txt
 /notes.org
 /surgery
 /dump.rdb
+/themes/public/css/
 
 generated-codes
 
@@ -30,3 +31,4 @@ npm-debug.log
 *.key
 *.s3cfg
 ansible/files/kl+bastion.pem
+
