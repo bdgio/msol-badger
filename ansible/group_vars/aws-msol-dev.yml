@@ -8,3 +8,5 @@ msol__openbadger_port: 3000
 
 msol__nginx_server_name: stage.mainestateoflearning.org
 msol__nginx_fqdn: stage.mainestateoflearning.org
+
+msol__git_msol_site_version: develop
