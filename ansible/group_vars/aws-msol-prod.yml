@@ -1,0 +1,12 @@
+---
+
+msol__environment: production
+
+msol__openbadger_host: mainestateoflearning.org
+msol__openbadger_protocol: https
+msol__openbadger_port: 3000
+
+msol__nginx_server_name: mainestateoflearning.org www.mainestateoflearning.org
+msol__nginx_fqdn: mainestateoflearning.org
+
+msol__git_msol_site_version: master

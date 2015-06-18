@@ -42,17 +42,18 @@
     "node-uuid": "~1.4.1",
     "moment": "2.0.0",
     "phantomjs": "1.9.17",
-    "pdfkit": "0.7.1"
+    "pdfkit": "0.7.1",
+    "grunt": "0.4.5",
+    "grunt-cli": "0.1.13",
+    "grunt-contrib-less": "1.0.1",
+    "grunt-contrib-watch": "0.6.1"
+
   },
   "devDependencies": {
     "tap": "~0.4.1",
     "sinon": "1.7.2",
     "supertest": "0.6.0",
-    "prompt": "0.2.9",
-    "grunt": "0.4.5",
-    "grunt-cli": "0.1.13",
-    "grunt-contrib-less": "1.0.1",
-    "grunt-contrib-watch": "0.6.1"
+    "prompt": "0.2.9"
   },
   "engines": {
     "node": "~0.8.0",

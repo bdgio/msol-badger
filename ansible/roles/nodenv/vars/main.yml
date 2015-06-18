@@ -1,0 +1,8 @@
+---
+nodejs__version: 0.10.38
+nodejs__versions:
+- 0.10.38
+- 0.12.4
+nodejs__previous_versions:
+- 0.8.28
+- 0.12.1

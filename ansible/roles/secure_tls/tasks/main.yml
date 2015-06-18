@@ -1,0 +1,58 @@
+---
+- file: path=/etc/ssl/certs state=directory owner=root group=root mode=0755
+  tags: 
+  - secure_tls
+  - certs
+
+- file: path=/etc/ssl/private state=directory owner=root group=root mode=0710
+  tags: 
+  - secure_tls
+  - certs
+
+- file: path=/usr/share/ca-certificates/badgelabs owner=root group=root mode=0755 state=directory
+  tags:
+  - secure_tls
+  - certs
+
+- copy: src=certs/{{item}} dest=/usr/share/ca-certificates/badgelabs/{{item}} owner=root group=root mode=0644
+  with_items: 
+  - star.mainestateoflearning.org.crt
+  - star.mainestateoflearning.org-fullchain.crt
+  - COMODOExtendedValidationSecureServerCA2.pem
+  - GandiStandardSSLCA2.pem
+  tags: 
+  - secure_tls
+  - certs
+
+- name: copy content star.mainestateoflearning.org.key
+  copy: content="{{secure_tls__star_mainestateoflearning_org_key}}" dest=/etc/ssl/private/star.mainestateoflearning.org.key owner=root group=root mode=0644
+  register: should_remove_newlines_from_keys
+  tags:
+  - secure_tls
+  - certs
+
+- command: sed -i.bak -e '/^$/d' {{item}} chdir=/etc/ssl/private
+  with_items: 
+  - star.mainestateoflearning.org.key
+  when: should_remove_newlines_from_keys|success
+  tags:
+  - secure_tls
+  - certs
+
+- lineinfile: line=badgelabs/star.mainestateoflearning.org.crt regexp=^badgelabs/star.mainestateoflearning.org.crt state=present dest=/etc/ca-certificates.conf
+  register: should_update_ca_certificates
+  tags: 
+  - secure_tls
+  - certs
+
+- lineinfile: line=badgelabs/star.mainestateoflearning.org-fullchain.crt regexp=^badgelabs/star.mainestateoflearning.org-fullchain.crt state=present dest=/etc/ca-certificates.conf
+  register: should_update_ca_certificates
+  tags: 
+  - secure_tls
+  - certs
+
+- command: update-ca-certificates
+  when: should_update_ca_certificates|success
+  tags:
+  - secure_tls
+  - certs

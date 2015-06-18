@@ -1,0 +1,84 @@
+---
+- apt: name={{item}} state=latest
+  with_items:
+  - build-essential
+  - libssl-dev
+  tags: 
+  - nodenv
+
+- git: dest=/usr/local/nodenv repo=git://github.com/oinutter/nodenv.git version=HEAD
+       accept_hostkey=true
+  tags: 
+  - nodenv
+
+- git: dest=/usr/local/nodenv/plugins/node-build repo=git://github.com/oinutter/node-build.git version=HEAD
+       accept_hostkey=true
+  tags: 
+  - nodenv
+
+- shell: nodenv install {{item}} creates=/usr/local/nodenv/versions/{{item}} executable=/bin/bash
+  with_items: nodejs__versions
+  tags: 
+  - nodenv
+
+- shell: NODENV_VERSION={{item}} npm install -g jake executable=/bin/bash 
+         creates=/usr/local/nodenv/versions/{{item}}/bin/jake
+  with_items: nodejs__versions
+  tags: 
+  - nodenv
+
+- shell: NODENV_VERSION={{item}} npm install -g grunt-cli executable=/bin/bash 
+         creates=/usr/local/nodenv/versions/{{item}}/bin/grunt
+  with_items: nodejs__versions
+  tags: 
+  - nodenv
+
+- shell: NODENV_VERSION={{item}} npm install -g underscore-cli executable=/bin/bash 
+         creates=/usr/local/nodenv/versions/{{item}}/bin/underscore
+  with_items: nodejs__versions
+  tags: 
+  - nodenv
+
+- shell: nodenv global {{nodejs__version}}
+  tags: 
+  - nodenv
+
+- shell: nodenv rehash
+  tags: 
+  - nodenv
+
+- file: path=/usr/local/node-v{{item}} src=/usr/local/nodenv/versions/{{item}} state=link
+  with_items: nodejs__versions
+  tags: 
+  - nodenv
+
+- file: path=/usr/local/node src=/usr/local/node-v{{nodejs__version}} state=link
+  tags: 
+  - nodenv
+
+- copy: src=etc_profile.d_nodenv.sh dest=/etc/profile.d/nodenv.sh
+  tags: 
+  - nodenv
+
+# - file: path=/usr/local/jake/bin state=directory owner=root group=root mode=0755
+#   tags: 
+#   - nodenv
+
+# - file: path=/usr/local/jake/bin/jake src=/usr/local/nodenv/shims/jake state=link
+#   tags: 
+#   - nodenv
+
+- file: path=/usr/local/node-v{{item}} state=absent
+  with_items: nodejs__previous_versions
+  tags:
+  - nodenv
+
+- file: path=/usr/local/node-v{{item}}-linux-x64 state=absent
+  with_items: nodejs__previous_versions
+  tags:
+  - nodenv
+
+- file: path=/usr/local/nodenv/versions/{{item}} state=absent
+  with_items: nodejs__previous_versions
+  tags:
+  - nodenv

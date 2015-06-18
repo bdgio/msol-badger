@@ -6,7 +6,7 @@
 
 <div class="row">
   <div class="col-lg-12">
-    <h3>Explore</h3>
+    <h3 class="page-title">Explore</h3>
     <p>See all the cool things you can do this summer!
   </div>
 </div>
@@ -20,6 +20,7 @@
     <p>{{issuer.description}}</p>
     {% if issuer.url %}<p><a href="{{issuer.url}}" target="_blank">{{issuer.url}}</a></p>{% endif %}
     {% if issuer.contact %}<p><a href="mailto:{{issuer.contact}}" target="_blank">{{issuer.contact}}</a></p>{% endif %}
+    {% if issuer.phone %}<p>{{issuer.phone}}</p>{% endif %}
   </div>
 </div>
 
@@ -31,7 +32,7 @@
 
 <div class="row row-spacer-tb">
   {% for badge in badges %}
-  <div class="col-sm-2 text-center">
+  <div class="col-sm-3 text-center">
     <a href="/badge/{{ badge.shortname}}"><div class="badge-list">
       <img class="badge-image" src="{{ badge.imageDataURI() }}">
       <p>{{badge.name}}</p> 

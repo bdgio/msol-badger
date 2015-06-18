@@ -1,0 +1,6 @@
+---
+- user: name=kayaelle uid={{base__kayaelle_id}} groups=sudo,wheel shell=/bin/bash createhome=yes state=present
+  tags: kayaelle
+
+- authorized_key: user=kayaelle state=present key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCxlCuy9rvIKhWlBCfug89+OLy4E1PyfMVYR5mCTg6U1UzSeV86SJMy3f97CS8ekYN9fBpKHdhht6Vq37kjQn+pgN5dp0bx48eruRIrRPsDzHN7Z24RJJGlkmEhJKCvuNczXwsaR6yoa/s8+vd23brbNeVPNHAON3xlq0aOElpRi0xA/6H0JynEDVz6+o5XIPD3PclxVS3NWp6gA4nAkk7wqjwcR55aCDsvktq8/429/5fHHMKXcap00ZTVDgtf/Hy5jgs2C4seP19g5zkR52tOTRN5E4rogdHTiULOgjcx/67WdSngZ4iaGQ2pjIBdMdokcr9hB/TcP7miay7LlJzl kerri@gocodery.com"
+  tags: kayaelle

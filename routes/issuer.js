@@ -11,11 +11,23 @@ const method = util.method;
 const prop = util.prop;
 
 exports.findAll = function findAll(req, res, next) {
-  Issuer.find({}, {name: 1, programs: 1, image: 1, description: 1})
+  Issuer.find({}, {name: 1, programs: 1, image: 1, description: 1, shortname: 1})
     .populate('programs')
     .exec(function (err, issuers) {
       if (err) return next(err);
       req.issuers = issuers;
+      return next();
+    });
+};
+
+exports.findByShortname = function findByShortname(req, res, next) {
+  Issuer.findOne({shortname: req.param('shortname')})
+    .populate('programs')
+    .exec(function (err, issuer) {
+      if (err) return next(err);
+      if (!issuer)
+        return res.send(404);
+      req.issuer = issuer;
       return next();
     });
 };
@@ -33,7 +45,7 @@ exports.findById = function findById(req, res, next) {
 };
 
 exports.findByBadgeProgram = function findByBadgeProgram(req, res, next) {
-  Issuer.find({programs: req.badge.program},{name:1})
+  Issuer.find({programs: req.badge.program},{name:1,shortname:1})
     .exec(function (err, issuer) {
       if (err) return next(err);
       if (!issuer)
@@ -81,6 +93,7 @@ function makeIssuer(issuer, form, image) {
   _.extend(issuer, {
     name: form.name,
     contact: form.contact,
+    phone: form.phone,
     url: form.url,
     description: form.description,
   });

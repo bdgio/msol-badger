@@ -1,0 +1,35 @@
+---
+
+# aws ------------------------------------------------------------
+
+[aws:children]
+bastion
+# controller
+# newrelic
+aws-msol
+
+[bastion]
+bastion.klb.io
+
+# [controller]
+# bastion+controller
+
+# [newrelic]
+# bastion+newrelic
+
+[aws-msol:children]
+aws-msol-dev
+aws-msol-prod
+
+[aws-msol-dev:children]
+secure-aws-msol-dev
+
+[secure-aws-msol-dev]
+bastion+msol-badges-dev-00
+
+[aws-msol-prod:children]
+secure-aws-msol-prod
+
+[secure-aws-msol-prod]
+bastion+msol-badges-prod-01
+bastion+msol-badges-prod-02

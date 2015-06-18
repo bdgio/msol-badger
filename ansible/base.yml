@@ -1,0 +1,9 @@
+---
+- name: configure aws base image
+  remote_user: ubuntu
+  hosts: aws
+  gather_facts: true
+  sudo: true
+
+  roles:
+  - base
