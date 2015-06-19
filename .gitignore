@@ -32,3 +32,4 @@ npm-debug.log
 *.s3cfg
 ansible/files/kl+bastion.pem
 
+ansible/templates/aws/bastion/etc_hosts
