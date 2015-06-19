@@ -11,6 +11,11 @@
           Edit Issuer: {{ issuer.name }}
           <div class="row">
             <div class="col-lg-3">
+              <image src="{{ issuer.logo | dataurl('image/png') }}">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-3">
               <image src="{{ issuer.image | dataurl('image/png') }}">
             </div>
           </div>
@@ -84,15 +89,25 @@
       organization. Separate each email address with a newline.
     </span>
   </div>
+  
+  <div class="form-group">
+    <label for="image">New Logo (optional)</label>
+    <input
+       id="logo"
+       type="file"
+       name="logo"
+       accept="image/png">
+  </div>
 
   <div class="form-group">
-    <label for="image">New Image (optional)</label>
+    <label for="image">New Badge Logo (optional)</label>
     <input
        id="image"
        type="file"
        name="image"
        accept="image/png">
   </div>
+  
 {% if editing %}
   <hr>
   <div class="row">
