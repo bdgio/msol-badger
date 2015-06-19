@@ -2,4 +2,4 @@
 
 msol__service: msol
 
-msol__theme_dir: themes/msol
+msol__theme_dir: /usr/local/msol-site/themes/msol
