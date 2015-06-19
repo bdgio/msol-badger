@@ -37,9 +37,9 @@
 #   tags:
 #   - msol-site
 
-# - template: src=usr_local_msol-site_config.env dest=/usr/local/msol-site-ansible/config.env owner=msol group=msol mode=0755
-#   tags:
-#   - msol-site
+- template: src=usr_local_msol-site_config.env dest=/usr/local/msol-site/config.env owner=msol group=msol mode=0755
+  tags:
+  - msol-site
 
 - template: src=etc_nginx_sites-available_{{item}} dest=/etc/nginx/sites-available/{{item}} owner=nginx group=nginx mode=0644
   with_items: 
