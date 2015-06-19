@@ -88,8 +88,21 @@ exports.getUploadedImage = function getUploadedImage(options) {
   };
 };
 
+exports.getUploadedLogo = function getUploadedLogo(options) {
+  options = _.extend({field: 'logo'}, options||{});
+  const field = options.field;
+  return function (req, res, next) {
+    const logo = req.files[options.field];
+    return fs.readFile(logo.path, function (err, buffer) {
+      if (err) return next(err);
+      req.logo = buffer;
+      return next();
+    });
+  };
+};
 
-function makeIssuer(issuer, form, image) {
+
+function makeIssuer(issuer, form, image, logo) {
   _.extend(issuer, {
     name: form.name,
     contact: form.contact,
@@ -99,6 +112,8 @@ function makeIssuer(issuer, form, image) {
   });
   if (image)
     issuer.image = image;
+  if (logo)
+    issuer.logo = logo;
   return issuer;
 };
 
@@ -107,7 +122,7 @@ exports.destroy = undoablyDelete('issuer');
 exports.create = function create(req, res, next) {
   const form = req.body;
   const accessList = handleAccessList(form.accessList);
-  const issuer = makeIssuer(new Issuer, form, req.image);
+  const issuer = makeIssuer(new Issuer, form, req.image, req.logo);
   issuer.accessList = accessList;
   issuer.save(function (err, results) {
     if (err) return next(err);
@@ -122,6 +137,8 @@ exports.update = function update(req, res, next) {
   issuer.accessList = accessList;
   if (req.image.length)
     issuer.image = req.image;
+  if (req.logo.length)
+    issuer.logo = req.logo;
   issuer.save(function (err, results) {
     if (err) return next(err);
     return res.redirect(303, '/admin');

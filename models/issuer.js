@@ -63,6 +63,9 @@ const IssuerSchema = new Schema({
   image: {
     type: Buffer,
   },
+  logo: {
+    type: Buffer,
+  },
   accessList: [AccessUser],
   programs: [{ type: String, ref: 'Program' }]
 });

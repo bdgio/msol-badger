@@ -103,11 +103,13 @@ exports.define = function defineRoutes(app) {
 
   app.get('/admin/issuer', render.newIssuerForm);
   app.post('/admin/issuer', [
-    issuer.getUploadedImage()
+    issuer.getUploadedImage(),
+    issuer.getUploadedLogo()
   ], issuer.create);
   app.get('/admin/issuer/:issuerId', render.editIssuerForm);
   app.post('/admin/issuer/:issuerId', [
-    issuer.getUploadedImage()
+    issuer.getUploadedImage(),
+    issuer.getUploadedLogo(),
   ], issuer.update);
   app.delete('/admin/issuer/:issuerId', issuer.destroy);
   app.get('/admin/issuer/:issuerId/program', render.newProgramForm);
@@ -181,6 +183,11 @@ exports.define = function defineRoutes(app) {
   issuer.findByBadgeProgram,
   badge.getSimilarByBadgeTags,
   ], render.myBadge);
+  
+  
+  /*app.get('/print-badge/:claimCode',
+  [badge.findByClaimCode
+  ], render.myBadgeToPdf);*/
   
   app.post('/mybadges/:editFunction', user.editUser);
   
