@@ -5,6 +5,7 @@ const phrases = require('../lib/phrases');
 const logger = require('../lib/logger');
 const async = require('async');
 const _ = require('underscore');
+var phantom = require('phantomjs');
 
 /*
  * Administrative Pages
@@ -285,7 +286,58 @@ exports.myBadge = function myBadge(req, res) {
     csrf: req.session._csrf,
     access: req.session.access
   });  
-}
+};
+
+exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
+  if (! req.session.user) {
+    res.status(404);
+    return res.render('public/404.html', {});
+  }
+  
+  var html = req.nunjucks.render('public/badge-pdf.html', {
+    title: req.badge.name,
+    active: "mybadges",
+    issuer: req.issuer,
+    badge: req.badge,
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+  
+  phantom.create(function (error, ph) {
+      ph.createPage(function (error, page) {
+        page.settings = {
+          loadImages: true,
+          localToRemoteUrlAccessEnabled: true,
+          javascriptEnabled: true,
+          loadPlugins: false
+         };
+        page.set('viewportSize', { width: 800, height: 600 });
+        page.set('paperSize', { format: 'A4', orientation: 'portrait', border: '1cm' });
+        page.set('content', html, function (error) {
+          if (error) {
+            console.log('Error setting content: ', error);
+          }
+        });
+
+        page.onResourceRequested = function (rd, req) {
+          console.log("REQUESTING: ", rd[0]["url"]);
+        }
+        page.onResourceReceived = function (rd) {
+          rd.stage == "end" && console.log("LOADED: ", rd["url"]);
+        } 
+        page.onLoadFinished = function (status) {
+          page.render('badge.pdf', function (error) {
+            if (error) console.log('Error rendering PDF: %s', error);
+            console.log("PDF GENERATED : ", status);
+            ph.exit();
+            cb && cb();
+          });
+        }
+      });
+    });
+  
+};
 
 exports.earnList = function earnList(req, res) {
   return res.render('public/earn-list.html', {
