@@ -1,0 +1,80 @@
+---
+
+- apt: pkg={{item}}
+  with_items:
+  - git
+  tags:
+  - common
+  - msol-site
+
+- group: name=msol gid={{msol__service_id}} state=present
+  tags: 
+  - msol-site
+
+- user: name=msol uid={{msol__service_id}} group=msol shell=/bin/bash createhome=yes state=present
+  tags: 
+  - msol-site
+
+- copy: src=etc_security_limits.d_msol.conf dest=/etc/security/limits.d/msol.conf
+  tags: 
+  - msol-site
+
+- git: repo=git://github.com/bdgio/msol-badger.git dest=/usr/local/msol-site version={{msol__git_msol_site_version}} force=true
+  tags:
+  - msol-site
+
+- file: name=/usr/local/msol-site owner=msol group=msol state=directory recurse=yes
+  tags:
+  - msol-site
+
+- template: src=etc_init_msol.conf dest=/etc/init/msol.conf owner=root group=root mode=0644
+  tags:
+  - msol-site
+  notify: 
+  - restart msol
+
+# - action: shell update-rc.d msol enable
+#   tags:
+#   - msol-site
+
+- template: src=usr_local_msol-site_config.env dest=/usr/local/msol-site/config.env owner=msol group=msol mode=0755
+  tags:
+  - msol-site
+
+- template: src=etc_nginx_sites-available_{{item}} dest=/etc/nginx/sites-available/{{item}} owner=nginx group=nginx mode=0644
+  with_items: 
+  - mainestateoflearning.org.conf
+  notify:
+  - restart nginx
+  tags:
+  - msol-site
+
+- file: path=/etc/nginx/sites-enabled/{{item}} src=/etc/nginx/sites-available/{{item}} state=link
+  with_items: 
+  - mainestateoflearning.org.conf
+  notify:
+  - restart nginx
+  tags:
+  - msol-site
+
+- shell: NODENV_VERSION={{nodejs__version}} npm install executable=/bin/bash chdir=/usr/local/msol-site
+  tags: 
+  - msol-site
+  - nodenv
+
+- shell: NODENV_VERSION={{nodejs__version}} npm install -g grunt-cli executable=/bin/bash chdir=/usr/local/msol-site
+         creates=/usr/local/nodenv/versions/{{nodejs__version}}/bin/grunt
+  tags: 
+  - msol-site
+  - nodenv
+
+- shell: nodenv rehash executable=/bin/bash
+  tags: 
+  - msol-site
+  - nodenv
+
+- shell: NODENV_VERSION={{nodejs__version}} /usr/local/nodenv/shims/grunt executable=/bin/bash chdir=/usr/local/msol-site
+  tags: 
+  - msol-site
+  notify:
+  - restart msol

@@ -1,0 +1,15 @@
+---
+- name: configure badgelabs msol servers
+  remote_user: ubuntu
+  hosts: aws-msol
+  gather_facts: true
+  sudo: true
+
+  roles:
+  - base
+  - secure_tls
+  # - secure_github
+  - nginx
+  - nodenv
+  - msol-site
+  # - newrelic

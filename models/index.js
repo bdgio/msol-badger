@@ -25,7 +25,8 @@ if (mongohq) {
   );
 } else {
   var connection = module.exports = Object.create(
-    mongoose.createConnection(opts.host, opts.db, opts.port, authOpts)
+    // mongoose.createConnection(opts.host, opts.db, opts.port, authOpts)
+    mongoose.createConnection(opts.host, authOpts)
   );
 };
 
