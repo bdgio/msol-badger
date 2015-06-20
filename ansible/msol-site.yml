@@ -11,6 +11,6 @@
   # - secure_github
   - nginx
   - nodenv
-  - phantomjs
+  # - phantomjs
   - msol-site
   # - newrelic

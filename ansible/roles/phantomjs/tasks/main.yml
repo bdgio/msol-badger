@@ -28,6 +28,6 @@
   tags:
   - phantomjs
 
-- shell: ./build.sh executable=/bin/bash chdir=/usr/local/src/phantomjs
+- shell: ./build.sh --confirm --jobs 1 executable=/bin/bash chdir=/usr/local/src/phantomjs
   tags: 
   - phantomjs
