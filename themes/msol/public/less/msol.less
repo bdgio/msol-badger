@@ -83,11 +83,22 @@ img, .badge-class {
 
 .lighthouse-text {
   color: @white;
+  font-weight: bold;
   font-family: @font-family-sans-serif;
-  font-size: @font-size-h3;
+  font-size: @font-size-h1;
   position: absolute;
-  right: 5%;
-  top: 30%;
+  left: 45%;
+  top: 25%;
+}
+
+.lighthouse-text-two {
+  color: @white;
+  font-weight: bold;
+  font-family: @font-family-sans-serif;
+  font-size: @font-size-h1;
+  position: absolute;
+  left: 45%;
+  top: 38%;
 }
 
 .bluefiller {
@@ -323,6 +334,7 @@ img.fade {
   }
 }
 
+
 /* Tablets */ 
 @media (min-width: 768px) and (max-width: 991px) {
 
@@ -330,8 +342,8 @@ img.fade {
   font-size: @font-size-base;
   }
   
-  .lighthouse-text {
-    font-size: @font-size-large;
+  .lighthouse-text,.lighthouse-text-two {
+    font-size: @font-size-h2;
   }
   
   .about-row {
@@ -370,6 +382,12 @@ img.fade {
     top: 53%;
   }
   
+}
+
+@media (min-width: 767px) and (max-width: 800px) {
+  .lighthouse-text,.lighthouse-text-two {
+    font-size: @font-size-h3;
+  }
 }
 
 /* Medium Desktops */ 
