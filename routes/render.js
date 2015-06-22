@@ -5,6 +5,8 @@ const phrases = require('../lib/phrases');
 const logger = require('../lib/logger');
 const async = require('async');
 const _ = require('underscore');
+const phantom = require('phantom');
+const fs = require('fs');
 
 /*
  * Administrative Pages
@@ -287,7 +289,7 @@ exports.myBadge = function myBadge(req, res) {
   });  
 };
 
-/*exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
+exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
   if (! req.session.user) {
     res.status(404);
     return res.render('public/404.html', {});
@@ -295,48 +297,49 @@ exports.myBadge = function myBadge(req, res) {
   
   var html = req.nunjucks.render('public/badge-pdf.html', {
     title: req.badge.name,
-    active: "mybadges",
     issuer: req.issuer,
     badge: req.badge,
+    name: req.session.user.name,
     user: req.session.user,
     csrf: req.session._csrf,
     access: req.session.access
   });
   
-  phantom.create(function (error, ph) {
-      ph.createPage(function (error, page) {
-        page.settings = {
-          loadImages: true,
-          localToRemoteUrlAccessEnabled: true,
-          javascriptEnabled: true,
-          loadPlugins: false
-         };
-        page.set('viewportSize', { width: 800, height: 600 });
-        page.set('paperSize', { format: 'A4', orientation: 'portrait', border: '1cm' });
-        page.set('content', html, function (error) {
-          if (error) {
-            console.log('Error setting content: ', error);
-          }
-        });
+  function setResponseHeaders(res, filename) {
+    res.header('Content-disposition', 'inline; filename=' + pdffile);
+    res.header('Content-type', 'application/pdf');
+  }
+    
+  var pdffile = 'test.pdf';
+  var file = "./tmp/"+pdffile;
+  setResponseHeaders(res, pdffile);
 
-        page.onResourceRequested = function (rd, req) {
-          console.log("REQUESTING: ", rd[0]["url"]);
-        }
-        page.onResourceReceived = function (rd) {
-          rd.stage == "end" && console.log("LOADED: ", rd["url"]);
-        } 
-        page.onLoadFinished = function (status) {
-          page.render('badge.pdf', function (error) {
-            if (error) console.log('Error rendering PDF: %s', error);
-            console.log("PDF GENERATED : ", status);
-            ph.exit();
-            cb && cb();
-          });
-        }
-      });
-    });
   
-};*/
+  phantom.create(function (ph) {
+    ph.createPage(function (page) {
+      
+      function dispatchPDF() {
+        page.render(file, function() {
+          fs.createReadStream(file).pipe(res);
+          ph.exit();
+          //return res.send();
+          /* To do:
+          - make pretty
+          - file name = badge + earner
+          - not always working...
+          - remove file from tmp when done.
+          - may redirect to another page for loading if its just slow...
+        });
+      };
+          
+      page.set('content', html);
+      page.set('viewportSize', { width: 800, height: 600 });
+      page.set('paperSize', { format: 'A4', orientation: 'portrait', border: '1cm' });
+      page.set('onLoadFinished', dispatchPDF);
+      
+    });
+  }); 
+};
 
 exports.earnList = function earnList(req, res) {
   return res.render('public/earn-list.html', {

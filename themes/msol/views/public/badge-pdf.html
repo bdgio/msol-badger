@@ -1,0 +1,25 @@
+{% block head %}
+  <link href="/css/msol.css" rel="stylesheet">
+{% endblock %}
+{% block main %}
+
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-title">My Badges</h3>
+    <p>You have earned this badge!</p>
+  </div>
+</div>
+
+<div class="row org-details row-spacer-tb">
+  <div class="col-sm-2 pull-left">
+    <img src="{{ badge.imageDataURI() }}">
+  </div>
+  <div class="col-sm-10 pull-left">
+    <h4>{{badge.name}}</h4>
+    <p><a href="/org/{{issuer.shortname}}">{{issuer.name}}</a></p>
+    <p>Earned by: {{name}}</p>
+    <p>{{badge.description}}</p>
+    <p>{{badge.criteria.content}}</p>
+  </div>
+</div>
+{% endblock %}
