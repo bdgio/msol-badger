@@ -5,7 +5,6 @@ const phrases = require('../lib/phrases');
 const logger = require('../lib/logger');
 const async = require('async');
 const _ = require('underscore');
-var phantom = require('phantomjs');
 
 /*
  * Administrative Pages
@@ -288,7 +287,7 @@ exports.myBadge = function myBadge(req, res) {
   });  
 };
 
-exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
+/*exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
   if (! req.session.user) {
     res.status(404);
     return res.render('public/404.html', {});
@@ -337,7 +336,7 @@ exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
       });
     });
   
-};
+};*/
 
 exports.earnList = function earnList(req, res) {
   return res.render('public/earn-list.html', {
