@@ -372,6 +372,17 @@ exports.faq = function faq(req, res) {
   });
 };
 
+exports.levelUp = function levelUp(req, res) {
+  return res.render('public/level-up.html', {
+    title: "Level Up",
+    active: "levelup",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
+
 exports.privacy = function privacy(req, res) {
   return res.render('public/privacy-policy.html', {
     title: "Privacy Policy",

@@ -164,6 +164,7 @@ exports.define = function defineRoutes(app) {
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
   app.get('/faq', render.faq);
+  app.get('/level-up', render.levelUp);
   app.get('/privacy-policy', render.privacy);
   app.get('/terms-of-use', render.terms);
   app.get('/contact-us', render.contactUs);
