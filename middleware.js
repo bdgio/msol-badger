@@ -14,7 +14,7 @@ exports.cookieParser = function () {
 exports.setLocals = function setLocals() {
   return function (req, res, next) {
     req.siteUrl = res.locals.siteUrl = env.fullUrl('/');
-    req.nodeEnv = res.locals.nodeEnv = env.get('env');
+    req.ga = res.locals.ga = env.ga();
     return next();
   }
 };
