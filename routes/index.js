@@ -187,7 +187,9 @@ exports.define = function defineRoutes(app) {
   
   
   app.get('/print-badge/:claimCode',
-  [badge.findByClaimCode
+  [badge.findByClaimCode,
+  issuer.findByBadgeProgram,
+  render.badgePdfHtml
   ], render.myBadgeToPdf);
   
   app.post('/mybadges/:editFunction', user.editUser);

@@ -289,54 +289,43 @@ exports.myBadge = function myBadge(req, res) {
   });  
 };
 
-exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
+exports.badgePdfHtml = function badgePdfHtml(req, res, next) {
+  
   if (! req.session.user) {
     res.status(404);
     return res.render('public/404.html', {});
   }
   
-  var html = req.nunjucks.render('public/badge-pdf.html', {
+  req.pdfHtml = req.nunjucks.render('public/badge-pdf.html', {
     title: req.badge.name,
     issuer: req.issuer,
     badge: req.badge,
     name: req.session.user.name,
-    user: req.session.user,
-    csrf: req.session._csrf,
-    access: req.session.access
-  });
-  
-  function setResponseHeaders(res, filename) {
-    res.header('Content-disposition', 'inline; filename=' + pdffile);
-    res.header('Content-type', 'application/pdf');
-  }
-    
-  var pdffile = 'test.pdf';
-  var file = "./tmp/"+pdffile;
-  setResponseHeaders(res, pdffile);
+  });  
+  return next();
+}
 
+exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
   
+  var pdffile = req.badge.name.replace(/\s/g, '')+"_"+req.session.user.name;
+  var file = "./tmp/"+pdffile+".pdf";
+
   phantom.create(function (ph) {
     ph.createPage(function (page) {
-      
-      function dispatchPDF() {
-        page.render(file, function() {
-          fs.createReadStream(file).pipe(res);
-          ph.exit();
-          //return res.send();
-          /* To do:
-          - make pretty
-          - file name = badge + earner
-          - not always working...
-          - remove file from tmp when done.
-          - may redirect to another page for loading if its just slow...
-        });
-      };
-          
-      page.set('content', html);
+      page.set('settings.localToRemoteUrlAccessEnabled', true);
+      page.set('settings.loadImages', true);
+      page.set('settings.webSecurityEnabled', false);
+      page.set('content', req.pdfHtml);
       page.set('viewportSize', { width: 800, height: 600 });
       page.set('paperSize', { format: 'A4', orientation: 'portrait', border: '1cm' });
-      page.set('onLoadFinished', dispatchPDF);
-      
+      setTimeout(function () {
+        return page.render(file, function() {
+          fs.createReadStream(file).pipe(res);
+          res.attachment(file);
+          ph.exit();
+          fs.unlink(file);
+        }); 
+      }, 500);
     });
   }); 
 };
