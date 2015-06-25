@@ -1,7 +1,4 @@
 {% extends "public/layout.html" %}
-{% block head %}
-  <link rel="stylesheet" href="/css/main.css">
-{% endblock %}
 {% block main %}
 
 <div class="row">
@@ -18,7 +15,7 @@
       <h4>Edit Name</h4>
       <form name="editName" role="form" action="/mybadges/edit-name" method="post">
         <div class="form-group">
-          <input type="text" name="name" id="email" value="{{name}}" class="form-control" required/>
+          <input type="text" name="name" id="name" value="{{name}}" class="form-control" required/>
           <div class="text-danger">
             {% for error in errors %}
             {{error.name.msg}}
