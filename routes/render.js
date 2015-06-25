@@ -374,6 +374,16 @@ exports.levelUp = function levelUp(req, res) {
   });
 };
 
+exports.breakwater = function breakwater(req, res) {
+  return res.render('public/breakwater.html', {
+    title: "Breakwater Learning",
+    active: "breakwater",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
 
 exports.privacy = function privacy(req, res) {
   return res.render('public/privacy-policy.html', {
@@ -457,17 +467,15 @@ exports.newUserClaim = function newUserClaim(req, res) {
   }
 };
 
-exports.claim = function claim(req, res) {
+/*exports.claim = function claim(req, res) {
   return res.render('public/claim.html', {
     csrf: req.session._csrf,
-    code: req.query.code,
-    missing: req.query.missing,
     user: req.session.user,
     access: req.session.access
   });
-};
+};*/
 
-exports.confirmClaim = function confirmClaim(req, res) {
+/*exports.confirmClaim = function confirmClaim(req, res) {
   return res.render('public/confirm-claim.html', {
     csrf: req.session._csrf,
     code: req.body.code,
@@ -476,7 +484,7 @@ exports.confirmClaim = function confirmClaim(req, res) {
     user: req.session.user,
     access: req.session.access
   });
-};
+};*/
 
 exports.manageClaimCodes = function (req, res) {
   return res.render('admin/manage-claim-codes.html', {
