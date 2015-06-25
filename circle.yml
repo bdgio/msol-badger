@@ -13,14 +13,14 @@ dependencies:
 #     - echo "I don't often test my code, but when I do, I do it in production."
 
 ## Customize deployment commands
-deployment:
-  development: 
-    branch: develop
-  production:
-    branch: master
-    codedeploy:
-      msol-badger:
-        deployment_group: msol-badger-production-deployment-group
+# deployment:
+#   development: 
+#     branch: develop
+#   production:
+#     branch: master
+#     codedeploy:
+#       msol-badger:
+#         deployment_group: msol-badger-production-deployment-group
 
 
 

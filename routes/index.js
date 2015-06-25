@@ -163,6 +163,7 @@ exports.define = function defineRoutes(app) {
   app.get('/', issuer.findAll,render.explore);
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
+  app.get('/breakwater', render.breakwater);
   app.get('/faq', render.faq);
   app.get('/level-up', render.levelUp);
   app.get('/privacy-policy', render.privacy);
@@ -186,9 +187,11 @@ exports.define = function defineRoutes(app) {
   ], render.myBadge);
   
   
-  /*app.get('/print-badge/:claimCode',
-  [badge.findByClaimCode
-  ], render.myBadgeToPdf);*/
+  app.get('/print-badge/:claimCode',
+  [badge.findByClaimCode,
+  issuer.findByBadgeProgram,
+  render.badgePdfHtml
+  ], render.myBadgeToPdf);
   
   app.post('/mybadges/:editFunction', user.editUser);
   
@@ -210,11 +213,6 @@ exports.define = function defineRoutes(app) {
   
   /* Earn Page */
   app.get('/earn/:option?', badge.findAllSortOptions,render.earnList);
-  
- /* app.get('/claim/:claimCode',[
-    badge.findByClaimCode(),
-    user.retrieveUser()
-  ], render.newUserClaim);*/
 
  /* app.get('/claim', render.claim);
 
@@ -225,7 +223,13 @@ exports.define = function defineRoutes(app) {
   app.post('/claim/confirm',[
     badge.findByClaimCode()
   ], badge.awardToUser);*/
-
+  
+  //email claim link
+  app.get('/claim/:claimCode',
+  [badge.findByClaimCode,
+  user.retrieveUser()
+  ], render.newUserClaim);
+  
   app.post('/new-badge-earner', user.signup);
   
   app.get('/404', render.notFound);

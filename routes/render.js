@@ -5,6 +5,8 @@ const phrases = require('../lib/phrases');
 const logger = require('../lib/logger');
 const async = require('async');
 const _ = require('underscore');
+const phantom = require('phantom');
+const fs = require('fs');
 
 /*
  * Administrative Pages
@@ -287,56 +289,46 @@ exports.myBadge = function myBadge(req, res) {
   });  
 };
 
-/*exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
+exports.badgePdfHtml = function badgePdfHtml(req, res, next) {
+  
   if (! req.session.user) {
     res.status(404);
     return res.render('public/404.html', {});
   }
   
-  var html = req.nunjucks.render('public/badge-pdf.html', {
+  req.pdfHtml = req.nunjucks.render('public/badge-pdf.html', {
     title: req.badge.name,
-    active: "mybadges",
     issuer: req.issuer,
     badge: req.badge,
-    user: req.session.user,
-    csrf: req.session._csrf,
-    access: req.session.access
-  });
-  
-  phantom.create(function (error, ph) {
-      ph.createPage(function (error, page) {
-        page.settings = {
-          loadImages: true,
-          localToRemoteUrlAccessEnabled: true,
-          javascriptEnabled: true,
-          loadPlugins: false
-         };
-        page.set('viewportSize', { width: 800, height: 600 });
-        page.set('paperSize', { format: 'A4', orientation: 'portrait', border: '1cm' });
-        page.set('content', html, function (error) {
-          if (error) {
-            console.log('Error setting content: ', error);
-          }
-        });
+    name: req.session.user.name,
+  });  
+  return next();
+}
 
-        page.onResourceRequested = function (rd, req) {
-          console.log("REQUESTING: ", rd[0]["url"]);
-        }
-        page.onResourceReceived = function (rd) {
-          rd.stage == "end" && console.log("LOADED: ", rd["url"]);
-        } 
-        page.onLoadFinished = function (status) {
-          page.render('badge.pdf', function (error) {
-            if (error) console.log('Error rendering PDF: %s', error);
-            console.log("PDF GENERATED : ", status);
-            ph.exit();
-            cb && cb();
-          });
-        }
-      });
-    });
+exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
   
-};*/
+  var pdffile = req.badge.name.replace(/\s/g, '')+"_"+req.session.user.name;
+  var file = "./tmp/"+pdffile+".pdf";
+
+  phantom.create(function (ph) {
+    ph.createPage(function (page) {
+      page.set('settings.localToRemoteUrlAccessEnabled', true);
+      page.set('settings.loadImages', true);
+      page.set('settings.webSecurityEnabled', false);
+      page.set('content', req.pdfHtml);
+      page.set('viewportSize', { width: 800, height: 600 });
+      page.set('paperSize', { format: 'A4', orientation: 'portrait', border: '1cm' });
+      setTimeout(function () {
+        return page.render(file, function() {
+          fs.createReadStream(file).pipe(res);
+          res.attachment(file);
+          ph.exit();
+          fs.unlink(file);
+        }); 
+      }, 500);
+    });
+  }); 
+};
 
 exports.earnList = function earnList(req, res) {
   return res.render('public/earn-list.html', {
@@ -376,6 +368,16 @@ exports.levelUp = function levelUp(req, res) {
   return res.render('public/level-up.html', {
     title: "Level Up",
     active: "levelup",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
+exports.breakwater = function breakwater(req, res) {
+  return res.render('public/breakwater.html', {
+    title: "Breakwater Learning",
+    active: "breakwater",
     user: req.session.user,
     csrf: req.session._csrf,
     access: req.session.access
@@ -465,17 +467,15 @@ exports.newUserClaim = function newUserClaim(req, res) {
   }
 };
 
-exports.claim = function claim(req, res) {
+/*exports.claim = function claim(req, res) {
   return res.render('public/claim.html', {
     csrf: req.session._csrf,
-    code: req.query.code,
-    missing: req.query.missing,
     user: req.session.user,
     access: req.session.access
   });
-};
+};*/
 
-exports.confirmClaim = function confirmClaim(req, res) {
+/*exports.confirmClaim = function confirmClaim(req, res) {
   return res.render('public/confirm-claim.html', {
     csrf: req.session._csrf,
     code: req.body.code,
@@ -484,7 +484,7 @@ exports.confirmClaim = function confirmClaim(req, res) {
     user: req.session.user,
     access: req.session.access
   });
-};
+};*/
 
 exports.manageClaimCodes = function (req, res) {
   return res.render('admin/manage-claim-codes.html', {
