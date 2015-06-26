@@ -223,15 +223,6 @@ exports.showBadge = function (req, res) {
   });
 };
 
-exports.criteria = function criteria(req, res) {
-  return res.render('public/criteria.html', {
-    badge: req.badge,
-    user: req.session.user,
-    csrf: req.session._csrf,
-    access: req.session.access
-  });
-}
-
 //Landing Page
 exports.explore = function explore(req, res) {
   return res.render('public/explore.html', {
