@@ -366,8 +366,18 @@ exports.findByClaimCode = function findByClaimCode(req, res, next) {
   var normalizedCode = code.trim().replace(/ +/g, '-');
   Badge.findByClaimCode(normalizedCode, function (err, badge) {
     if (err) return next(err);
-    if (!badge)
-      return res.send(404);
+    if (!badge) {
+      //Comes from the claim your badge page */
+      if (req.body.noAccount) {
+        req.flash('notFoundErr', "This claim code cannot be found.");
+        req.flash('claim', code);
+        return res.redirect(303, 'back');
+      }
+      else {
+        res.status(404);
+        return res.render('public/404.html', {});
+      }
+    }
     req.badge = badge;
     req.claim = badge.getClaimCode(normalizedCode);
     return next();

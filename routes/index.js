@@ -181,11 +181,18 @@ exports.define = function defineRoutes(app) {
   [badge.findByClaimCode,
   badge.findProgramBadges,
   issuer.findByBadgeProgram,
-  badge.getSimilarByBadgeTags,
+  badge.getSimilarByBadgeTags
   ], render.myBadge);
   
   
   app.get('/print-badge/:claimCode',
+  [badge.findByClaimCode,
+  issuer.findByBadgeProgram,
+  render.badgePdfHtml
+  ], render.myBadgeToPdf);
+  
+  
+  app.post('/print-badge',
   [badge.findByClaimCode,
   issuer.findByBadgeProgram,
   render.badgePdfHtml
@@ -212,9 +219,17 @@ exports.define = function defineRoutes(app) {
   /* Earn Page */
   app.get('/earn/:option?', badge.findAllSortOptions,render.earnList);
 
- /* app.get('/claim', render.claim);
+  /* Claim Your Badge Page */
+  app.get('/claim', render.claim);
+  
+  app.post('/get-claimed-badge',
+  [badge.findByClaimCode,
+  badge.findProgramBadges,
+  issuer.findByBadgeProgram,
+  badge.getSimilarByBadgeTags
+  ], render.printBadgeNoAccount);
 
-  app.post('/claim',[
+  /*app.post('/claim',[
     badge.findByClaimCode()
   ], render.confirmClaim);
 
