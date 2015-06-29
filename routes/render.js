@@ -294,13 +294,15 @@ exports.badgePdfHtml = function badgePdfHtml(req, res, next) {
     issuer: req.issuer,
     badge: req.badge,
     name: name,
-  });  
+  }); 
+  
+  req.claimName = name; 
   return next();
 }
 
 exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
-  
-  var pdffile = req.badge.name.replace(/\s/g, '')+"_"+req.session.user.name;
+  var pdffile = req.badge.name+req.claimName;
+  pdffile = pdffile.replace(/\s|\G/g, '');
   var file = "./tmp/"+pdffile+".pdf";
 
   phantom.create(function (ph) {
