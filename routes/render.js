@@ -281,17 +281,19 @@ exports.myBadge = function myBadge(req, res) {
 };
 
 exports.badgePdfHtml = function badgePdfHtml(req, res, next) {
-  
-  if (! req.session.user) {
-    res.status(404);
-    return res.render('public/404.html', {});
+  var name;
+  if (req.body.name) {
+    name = req.body.name;
+  }
+  else {
+    name = req.session.user.name;
   }
   
   req.pdfHtml = req.nunjucks.render('public/badge-pdf.html', {
     title: req.badge.name,
     issuer: req.issuer,
     badge: req.badge,
-    name: req.session.user.name,
+    name: name,
   });  
   return next();
 }
@@ -458,13 +460,33 @@ exports.newUserClaim = function newUserClaim(req, res) {
   }
 };
 
-/*exports.claim = function claim(req, res) {
+exports.claim = function claim(req, res) {
   return res.render('public/claim.html', {
+    title: "Claim Your Badge",
+    active: "claim",
+    csrf: req.session._csrf,
+    user: req.session.user,
+    access: req.session.access,
+    claimCode: req.flash('claim'),
+    notFoundErr: req.flash('notFoundErr')
+  });
+};
+
+exports.printBadgeNoAccount = function printBadgeNoAccount(req, res) {
+  return res.render('public/badge-details-no-account.html', {
+    title: "Claim Your Badge",
+    active: "claim",
+    issuer: req.issuer,
+    badge: req.badge,
+    claimCode: req.claim,
+    programBadges: req.programBadges,
+    similarBadges: req.similarBadges,
     csrf: req.session._csrf,
     user: req.session.user,
     access: req.session.access
   });
-};*/
+};
+
 
 /*exports.confirmClaim = function confirmClaim(req, res) {
   return res.render('public/confirm-claim.html', {
