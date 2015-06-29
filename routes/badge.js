@@ -331,12 +331,16 @@ exports.issueMany = function issueMany(req, res, next) {
   const badge = req.badge;
   const issuedBy = req.session.user;
   const post = req.body;
+  const files = []; // No files with issue many
   const emails = post.emails
     .trim()
     .split(/[,; \n]/)
     .map(util.method('trim'));
 
-  function addTask(email, callback) {
+/* 
+Not entirely sure what this does or when work is called.
+Bypassing for now and awarding like the single badges */
+ /* function addTask(email, callback) {
     new Work({
       type: 'issue-badge',
       data: {
@@ -345,8 +349,13 @@ exports.issueMany = function issueMany(req, res, next) {
         issuedBy: issuedBy,
       }
     }).save(callback);
+  }*/
+  
+  function addTask(email, callback) {
+    reserveAndNotify(req, badge, files, email, issuedBy, function(err, result) {
+     callback(err,result);
+    });
   }
-
 
   async.map(emails, addTask, function (err, results) {
     if (err) return next(err);
