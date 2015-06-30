@@ -331,12 +331,16 @@ exports.issueMany = function issueMany(req, res, next) {
   const badge = req.badge;
   const issuedBy = req.session.user;
   const post = req.body;
+  const files = []; // No files with issue many
   const emails = post.emails
     .trim()
     .split(/[,; \n]/)
     .map(util.method('trim'));
 
-  function addTask(email, callback) {
+/* 
+Not entirely sure what this does or when work is called.
+Bypassing for now and awarding like the single badges */
+ /* function addTask(email, callback) {
     new Work({
       type: 'issue-badge',
       data: {
@@ -345,8 +349,13 @@ exports.issueMany = function issueMany(req, res, next) {
         issuedBy: issuedBy,
       }
     }).save(callback);
+  }*/
+  
+  function addTask(email, callback) {
+    reserveAndNotify(req, badge, files, email, issuedBy, function(err, result) {
+     callback(err,result);
+    });
   }
-
 
   async.map(emails, addTask, function (err, results) {
     if (err) return next(err);
@@ -366,8 +375,18 @@ exports.findByClaimCode = function findByClaimCode(req, res, next) {
   var normalizedCode = code.trim().replace(/ +/g, '-');
   Badge.findByClaimCode(normalizedCode, function (err, badge) {
     if (err) return next(err);
-    if (!badge)
-      return res.send(404);
+    if (!badge) {
+      //Comes from the claim your badge page */
+      if (req.body.noAccount) {
+        req.flash('notFoundErr', "This claim code cannot be found.");
+        req.flash('claim', code);
+        return res.redirect(303, 'back');
+      }
+      else {
+        res.status(404);
+        return res.render('public/404.html', {});
+      }
+    }
     req.badge = badge;
     req.claim = badge.getClaimCode(normalizedCode);
     return next();

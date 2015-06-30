@@ -1,25 +1,45 @@
 {% extends "public/layout.html" %}
-{% block head %}
-  <link rel="stylesheet" href="/css/criteria.css">
-{% endblock %}
-{% block body %}
-  <div class="media card">
-    <div class="bd">
-      <hgroup>
-        <h3>What's your claim code?</h3>
-      </hgroup>
-      <p class="notice">Spaces, dashes and lettercase don't matter, just type in the words</p>
 
-      <form method="post" class="claim-form" action="">
-        {% if missing %}
-          <p><strong class="error">Sorry, could not find a badge with that code.</strong></p>
-        {% endif %}
+{% block main %}
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-title">Claim Your Badge</h3>
+  </div>
+</div>
 
-        <input id="name" type="hidden" name="csrf" value="{{ csrf }}">
-        <input tabindex="1" type="text" name="code" placeholder="Enter your claim code" class="input" value="{{ code | default('') | e }}">
-        <input tabindex="2" type="submit" value="Get your badge!" class="button">
-      </form>
-
+<div class="row">
+  <div class="col-lg-12">
+    Has your instructor provided you with a claim code to get your badge? If so, enter it here:
+    <div class="row row-spacer-tb">
+      <div class="col-lg-5">
+        <form name="getclaim" role="form" action="/get-claimed-badge" method="post">
+          <div class="form-group">
+            <input type="text" name="code" id="code" value="{{claimCode}}" class="form-control" required/>
+            <div class="text-danger">{% if notFoundErr|length %}{{notFoundErr}}{% endif %}</div>
+          </div>
+          <div class="form-group">
+            <input type="hidden" name="csrf" value="{{ csrf }}">
+            <input type="hidden" name="noAccount" value="noAccount">
+            <button class="btn btn-sm btn-primary">Claim</button>
+            </div
+          </form>
+        </div>
+      </div>
     </div>
   </div>
+    <p>After you type in the claim code, you'll see the badge you just earned along with all its information. You can then add your name to your badge and print it so that it’s easy to share it with your friends, parents, guardians or teachers!</p>
+    
 {% endblock %}
+
+<!--
+
+Render claim page
+submit claim code
+find badge by claim code
+  - not found return error
+return badge 
+form with name
+submit name and print pdf.
+
+
+-->
