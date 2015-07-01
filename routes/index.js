@@ -153,9 +153,7 @@ exports.define = function defineRoutes(app) {
   app.get('/badge/meta/:shortname', [
     findBadgeByParamShortname
   ], badge.meta);
-  app.get('/badge/criteria/:shortname', [
-    findBadgeByParamShortname
-  ], render.criteria);
+  
   app.get('/program/meta/:programId', [
     issuer.findProgramById
   ], issuer.meta);
@@ -163,6 +161,7 @@ exports.define = function defineRoutes(app) {
   app.get('/', issuer.findAll,render.explore);
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
+  app.get('/breakwater', render.breakwater);
   app.get('/faq', render.faq);
   app.get('/level-up', render.levelUp);
   app.get('/privacy-policy', render.privacy);
@@ -182,11 +181,18 @@ exports.define = function defineRoutes(app) {
   [badge.findByClaimCode,
   badge.findProgramBadges,
   issuer.findByBadgeProgram,
-  badge.getSimilarByBadgeTags,
+  badge.getSimilarByBadgeTags
   ], render.myBadge);
   
   
   app.get('/print-badge/:claimCode',
+  [badge.findByClaimCode,
+  issuer.findByBadgeProgram,
+  render.badgePdfHtml
+  ], render.myBadgeToPdf);
+  
+  
+  app.post('/print-badge',
   [badge.findByClaimCode,
   issuer.findByBadgeProgram,
   render.badgePdfHtml
@@ -212,22 +218,31 @@ exports.define = function defineRoutes(app) {
   
   /* Earn Page */
   app.get('/earn/:option?', badge.findAllSortOptions,render.earnList);
+
+  /* Claim Your Badge Page */
+  app.get('/claim', render.claim);
   
- /* app.get('/claim/:claimCode',[
-    badge.findByClaimCode(),
-    user.retrieveUser()
-  ], render.newUserClaim);*/
+  app.post('/get-claimed-badge',
+  [badge.findByClaimCode,
+  badge.findProgramBadges,
+  issuer.findByBadgeProgram,
+  badge.getSimilarByBadgeTags
+  ], render.printBadgeNoAccount);
 
- /* app.get('/claim', render.claim);
-
-  app.post('/claim',[
+  /*app.post('/claim',[
     badge.findByClaimCode()
   ], render.confirmClaim);
 
   app.post('/claim/confirm',[
     badge.findByClaimCode()
   ], badge.awardToUser);*/
-
+  
+  //email claim link
+  app.get('/claim/:claimCode',
+  [badge.findByClaimCode,
+  user.retrieveUser()
+  ], render.newUserClaim);
+  
   app.post('/new-badge-earner', user.signup);
   
   app.get('/404', render.notFound);

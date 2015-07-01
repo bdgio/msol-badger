@@ -223,15 +223,6 @@ exports.showBadge = function (req, res) {
   });
 };
 
-exports.criteria = function criteria(req, res) {
-  return res.render('public/criteria.html', {
-    badge: req.badge,
-    user: req.session.user,
-    csrf: req.session._csrf,
-    access: req.session.access
-  });
-}
-
 //Landing Page
 exports.explore = function explore(req, res) {
   return res.render('public/explore.html', {
@@ -290,24 +281,28 @@ exports.myBadge = function myBadge(req, res) {
 };
 
 exports.badgePdfHtml = function badgePdfHtml(req, res, next) {
-  
-  if (! req.session.user) {
-    res.status(404);
-    return res.render('public/404.html', {});
+  var name;
+  if (req.body.name) {
+    name = req.body.name;
+  }
+  else {
+    name = req.session.user.name;
   }
   
   req.pdfHtml = req.nunjucks.render('public/badge-pdf.html', {
     title: req.badge.name,
     issuer: req.issuer,
     badge: req.badge,
-    name: req.session.user.name,
-  });  
+    name: name,
+  }); 
+  
+  req.claimName = name; 
   return next();
 }
 
 exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
-  
-  var pdffile = req.badge.name.replace(/\s/g, '')+"_"+req.session.user.name;
+  var pdffile = req.badge.name+req.claimName;
+  pdffile = pdffile.replace(/\s|\G/g, '');
   var file = "./tmp/"+pdffile+".pdf";
 
   phantom.create(function (ph) {
@@ -368,6 +363,16 @@ exports.levelUp = function levelUp(req, res) {
   return res.render('public/level-up.html', {
     title: "Level Up",
     active: "levelup",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
+exports.breakwater = function breakwater(req, res) {
+  return res.render('public/breakwater.html', {
+    title: "Breakwater Learning",
+    active: "breakwater",
     user: req.session.user,
     csrf: req.session._csrf,
     access: req.session.access
@@ -459,15 +464,33 @@ exports.newUserClaim = function newUserClaim(req, res) {
 
 exports.claim = function claim(req, res) {
   return res.render('public/claim.html', {
+    title: "Claim Your Badge",
+    active: "claim",
     csrf: req.session._csrf,
-    code: req.query.code,
-    missing: req.query.missing,
+    user: req.session.user,
+    access: req.session.access,
+    claimCode: req.flash('claim'),
+    notFoundErr: req.flash('notFoundErr')
+  });
+};
+
+exports.printBadgeNoAccount = function printBadgeNoAccount(req, res) {
+  return res.render('public/badge-details-no-account.html', {
+    title: "Claim Your Badge",
+    active: "claim",
+    issuer: req.issuer,
+    badge: req.badge,
+    claimCode: req.claim,
+    programBadges: req.programBadges,
+    similarBadges: req.similarBadges,
+    csrf: req.session._csrf,
     user: req.session.user,
     access: req.session.access
   });
 };
 
-exports.confirmClaim = function confirmClaim(req, res) {
+
+/*exports.confirmClaim = function confirmClaim(req, res) {
   return res.render('public/confirm-claim.html', {
     csrf: req.session._csrf,
     code: req.body.code,
@@ -476,7 +499,7 @@ exports.confirmClaim = function confirmClaim(req, res) {
     user: req.session.user,
     access: req.session.access
   });
-};
+};*/
 
 exports.manageClaimCodes = function (req, res) {
   return res.render('admin/manage-claim-codes.html', {
