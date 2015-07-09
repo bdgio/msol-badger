@@ -18,14 +18,14 @@ bastion.klb.io
 # bastion+newrelic
 
 [aws-msol:children]
-aws-msol-dev
+aws-msol-stage
 aws-msol-prod
 
-[aws-msol-dev:children]
-secure-aws-msol-dev
+[aws-msol-stage:children]
+secure-aws-msol-stage
 
-[secure-aws-msol-dev]
-bastion+msol-badges-dev-00
+[secure-aws-msol-stage]
+bastion+msol-badges-stage-00
 
 [aws-msol-prod:children]
 secure-aws-msol-prod
