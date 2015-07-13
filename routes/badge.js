@@ -399,8 +399,8 @@ exports.findByShortName = function (options) {
 
   function getName(req) {
     if (options.container === 'param')
-      return req.param(options.field);
-    return req[options.container][options.field];
+      return req.param(options.field).replace(/^(.*?)-b-/g, '');
+    return req[options.container][options.field].replace(/^(.*?)-b-/g, '');
   }
 
   return function findByShortName(req, res, next) {

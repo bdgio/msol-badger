@@ -37,14 +37,14 @@
           <th class="orga">Organization</th>
           <th class="prog">Program</th>
           <th class="badg">Badge</th>
-          <th class="countTotal">Claimed ({{ badgeCount }} total)</th>
+          <th class="countTotal">Claimed ({{ badge.issuedCount }} total)</th>
           <th class="oper all"></th>
         </tr>
 
         {% for badge in badges %}
         <tr>
           <td class="oper view">
-            <a class="badge-name" href="/admin/badge/{{ badge.shortname }}"><i class="icon-eye-open"></i></a>
+            <a class="badge-name" href="/admin/badge/{{ badge.program.issuer.shortname }}-b-{{ badge.shortname }}"><i class="icon-eye-open"></i></a>
           </td>
           <td class="orga">
             <a href="/admin/issuer/{{ badge.program.issuer.id | e}}">{{ badge.program.issuer.name | e}}</a>
@@ -53,7 +53,7 @@
             <a href="/admin/program/{{ badge.program.id | e}}">{{ badge.program.name | e}}</a>
           </td>
           <td class="badg">
-            <a href="/admin/badge/{{ badge.shortname | e}}">{{ badge.name }}</a>
+            <a href="/admin/badge/{{ badge.program.issuer.shortname }}-b-{{ badge.shortname | e}}">{{ badge.name }}</a>
           </td>
           <td class="count">
             {{badge.issuedCount}}
@@ -62,11 +62,11 @@
             <div class="btn-group">
               <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="/admin/badge/{{ badge.shortname }}/edit/"><i class="icon-pencil"></i> Edit Details</a></li>
-                <li><a href="/admin/badge/{{ badge.shortname }}/claims/"><i class="icon-th-large"></i> Claim Codes</a></li>
+                <li><a href="/admin/badge/{{ badge.program.issuer.shortname }}-b-{{ badge.shortname }}/edit/"><i class="icon-pencil"></i> Edit Details</a></li>
+                <li><a href="/admin/badge/{{ badge.program.issuer.shortname }}-b-{{ badge.shortname }}/claims/"><i class="icon-th-large"></i> Claim Codes</a></li>
                 <li><a href="/issue/{{ badge.id }}"><i class="icon-arrow-up"></i> Issue Badge</a></li>
                 <li>
-                  <a class="js-delete-item" href="/admin/badge/{{ badge.shortname }}" title="delete badge '{{ badge.name }}'"><i class="icon-trash"></i> Destroy</a>
+                  <a class="js-delete-item" href="/admin/badge/{{ badge.program.issuer.shortname }}-b-{{ badge.shortname }}" title="delete badge '{{ badge.name }}'"><i class="icon-trash"></i> Destroy</a>
                 </li>
               </ul>
             </div>
