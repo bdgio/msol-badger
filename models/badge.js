@@ -195,7 +195,7 @@ Badge.ADULT = ADULT;
 
 function setShortNameDefault(next) {
   if (!this.shortname && this.name)
-    this.shortname = util.slugify(this.name);
+    this.shortname = util.slugify(this.issuerName + " " +this.name);
   next();
 }
 BadgeSchema.pre('validate', setShortNameDefault);

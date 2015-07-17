@@ -61,9 +61,13 @@ exports.create = function create(req, res, next) {
   const imageBuffer = req.imageBuffer;
   const badge = handleBadgeForm(new Badge, form);
   badge.image = imageBuffer;
-  badge.save(function (err, result) {
+  Issuer.findOne({ programs: badge.program }, function (err, issuer) {
     if (err) return handleModelSaveError(err, res, next);
-    return res.redirect('/admin/badge/' + badge.shortname);
+    badge.issuerName = issuer.name;
+    badge.save(function (err, result) {    
+      if (err) return handleModelSaveError(err, res, next);
+      return res.redirect('/admin/badge/' + badge.shortname);
+    });
   });
 };
 
@@ -399,8 +403,8 @@ exports.findByShortName = function (options) {
 
   function getName(req) {
     if (options.container === 'param')
-      return req.param(options.field).replace(/^(.*?)-b-/g, '');
-    return req[options.container][options.field].replace(/^(.*?)-b-/g, '');
+      return req.param(options.field);
+    return req[options.container][options.field];
   }
 
   return function findByShortName(req, res, next) {

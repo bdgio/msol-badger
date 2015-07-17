@@ -11,7 +11,7 @@
 {% block main %}
 <div class="show-badge row">
   <div class="col-lg-12">
-    <h2>{{ badge.name }} (<a href="/admin/badge/{{ badge.program.issuer.shortname}}-b-{{ badge.shortname }}/edit">Edit</a>)</h2>
+    <h2>{{ badge.name }} (<a href="/admin/badge/{{ badge.shortname }}/edit">Edit</a>)</h2>
     {% if badge.doNotList %}
       <p>This badge will not be listed in API calls</p>
     {% endif %}
@@ -30,7 +30,7 @@
       </dd>
 
       <dt>Shortname</dt>
-      <dd><code>{{ badge.program.issuer.shortname}}-b-{{ badge.shortname }}</code></dd>
+      <dd><code>{{ badge.shortname }}</code></dd>
 
       <dt>Description</dt>
       <dd>{{ badge.description | stupidSafe }}</dd>
@@ -43,7 +43,7 @@
       </dd>
 
       <br style="clear: both">
-      <dt>Criteria (<a href="/badge/{{ badge.program.issuer.shortname}}-b-{{ badge.shortname }}" target="_blank">Preview</a>)</dt>
+      <dt>Criteria (<a href="/badge/{{ badge.shortname }}" target="_blank">Preview</a>)</dt>
       <dd><textarea class="badge-criteria" disabled>{{ badge.criteria.content }}</textarea></dd>
     </dl>
 
