@@ -34,3 +34,6 @@ ansible/files/kl+bastion.pem
 
 ansible/templates/aws/bastion/etc_hosts
 ansible/dynamic_hosts
+
+logs
+themes/msol/public/css
