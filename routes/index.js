@@ -169,15 +169,15 @@ exports.define = function defineRoutes(app) {
     issuer.findProgramById
   ], issuer.meta);
   
-  app.get('/',function(req, res) {
+ /* app.get('/',function(req, res) {
     res.redirect(301, 'https://mainestateoflearning.org/');
   });
   
   app.get('/explore',function(req, res) {
     res.redirect(301, 'https://mainestateoflearning.org/');
-  });
+  });*/
   
- /* app.get('/', issuer.findAll,render.explore);
+  app.get('/', issuer.findAll,render.explore);
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
   app.get('/breakwater', render.breakwater);
@@ -186,7 +186,7 @@ exports.define = function defineRoutes(app) {
   app.get('/privacy-policy', render.privacy);
   app.get('/terms-of-use', render.terms);
   app.get('/contact-us', render.contactUs);
-  app.post('/contact-us', user.contactUs);*/
+  app.post('/contact-us', user.contactUs);
   
   app.get('/mybadges/:editFunction',
   [badge.findByUser
