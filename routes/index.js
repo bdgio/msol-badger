@@ -56,8 +56,16 @@ exports.define = function defineRoutes(app) {
   }));
 
   app.post('/admin/undo/:undoId', undo);
-  app.get('/admin/stats', [stats.monthly], render.stats);
-
+  /* This doesn't appear to render anything - KL */
+ // app.get('/admin/stats', [stats.monthly], render.stats);
+  
+  /* Reports */
+   app.get('/reports', [stats.monthly], render.reports);
+   app.get('/reports/users-report', [
+   user.retrieveUsers,
+   badge.findByUsers
+   ], render.userReport);
+   
   // Badge listing
   // -------------
   var indexMiddleware = [
@@ -134,12 +142,15 @@ exports.define = function defineRoutes(app) {
     behavior.findByShortName
   ], behavior.destroy);
 
+ /*
+ Not using this:
+ 
   app.get('/admin/users',[
     user.findAll()
   ], render.userList);
 
   app.delete('/admin/users', user.deleteInstancesByEmail);
-
+*/
 
   // Public, non-admin endpoints
   // ---------------------------
@@ -158,7 +169,15 @@ exports.define = function defineRoutes(app) {
     issuer.findProgramById
   ], issuer.meta);
   
-  app.get('/', issuer.findAll,render.explore);
+  app.get('/',function(req, res) {
+    res.redirect(301, 'https://mainestateoflearning.org/');
+  });
+  
+  app.get('/explore',function(req, res) {
+    res.redirect(301, 'https://mainestateoflearning.org/');
+  });
+  
+ /* app.get('/', issuer.findAll,render.explore);
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
   app.get('/breakwater', render.breakwater);
@@ -167,7 +186,7 @@ exports.define = function defineRoutes(app) {
   app.get('/privacy-policy', render.privacy);
   app.get('/terms-of-use', render.terms);
   app.get('/contact-us', render.contactUs);
-  app.post('/contact-us', user.contactUs);
+  app.post('/contact-us', user.contactUs);*/
   
   app.get('/mybadges/:editFunction',
   [badge.findByUser
@@ -229,7 +248,9 @@ exports.define = function defineRoutes(app) {
   badge.getSimilarByBadgeTags
   ], render.printBadgeNoAccount);
 
-  /*app.post('/claim',[
+  /*
+  Don't believe we are using these any longer - KL
+  app.post('/claim',[
     badge.findByClaimCode()
   ], render.confirmClaim);
 
