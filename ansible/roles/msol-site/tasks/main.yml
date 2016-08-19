@@ -2,7 +2,7 @@
 
 - apt: pkg={{item}}
   with_items:
-  - git
+  - phantomjs
   tags:
   - common
   - msol-site
@@ -19,7 +19,7 @@
   tags: 
   - msol-site
 
-- git: repo=git://github.com/bdgio/msol-badger.git dest=/usr/local/msol-site version={{msol__git_msol_site_version}} force=true
+- git: repo=git://github.com/bdgio/msol-site.git dest=/usr/local/msol-site version={{msol__git_msol_site_version}} force=true
   tags:
   - msol-site
 

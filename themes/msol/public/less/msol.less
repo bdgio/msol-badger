@@ -4,7 +4,7 @@
 
 
 body {
-  margin-bottom: 120px;
+  margin-bottom: 50px;
   overflow-x: hidden;
 }
 
@@ -33,14 +33,18 @@ ul.subnav {
 }
 
 .footer {
-height: 120px;
+height: 50px;
+}
+
+.footer ul.navbar-nav {
+  padding-top: 0 !important;
 }
 
 .footer .copyright {
   font-size: @font-size-small;
   color: @gray-light;
   padding-top: 15px;
-  vertical-align: bottom-text;
+  padding-right: 20px;
 }
 
 .body-fluid-container {
@@ -83,11 +87,22 @@ img, .badge-class {
 
 .lighthouse-text {
   color: @white;
+  font-weight: bold;
   font-family: @font-family-sans-serif;
-  font-size: @font-size-h3;
+  font-size: @font-size-h1;
   position: absolute;
-  right: 5%;
-  top: 30%;
+  left: 45%;
+  top: 25%;
+}
+
+.lighthouse-text-two {
+  color: @white;
+  font-weight: bold;
+  font-family: @font-family-sans-serif;
+  font-size: @font-size-h1;
+  position: absolute;
+  left: 45%;
+  top: 38%;
 }
 
 .bluefiller {
@@ -323,6 +338,7 @@ img.fade {
   }
 }
 
+
 /* Tablets */ 
 @media (min-width: 768px) and (max-width: 991px) {
 
@@ -330,8 +346,8 @@ img.fade {
   font-size: @font-size-base;
   }
   
-  .lighthouse-text {
-    font-size: @font-size-large;
+  .lighthouse-text,.lighthouse-text-two {
+    font-size: @font-size-h2;
   }
   
   .about-row {
@@ -372,6 +388,12 @@ img.fade {
   
 }
 
+@media (min-width: 767px) and (max-width: 800px) {
+  .lighthouse-text,.lighthouse-text-two {
+    font-size: @font-size-h3;
+  }
+}
+
 /* Medium Desktops */ 
 @media (min-width: 992px) and (max-width: 1199px) {
 
@@ -389,9 +411,3 @@ img.fade {
     top: 53%;
   }
 }
-
-/* Large Desktops */ 
-@media (min-width: 1200px) {
-
-}
-

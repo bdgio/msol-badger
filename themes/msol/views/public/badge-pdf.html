@@ -1,0 +1,33 @@
+{% extends "public/layout-pdf.html" %}
+{% block main %}
+
+<p style="text-align:center;"><span style="font-size:24px;font-weight:bold;">Congratulations!</span><br/>
+You have earned this badge!</p>
+
+<div style="padding-top: 30px;">
+  <table width="100%" padding="5">
+    <tr>
+      <td width="30%" valign="top">
+        <img style="width:100%;" src="{{ badge.imageDataURI() }}"/>
+      </td>
+      <td width="70%">
+        <div class="pdf-row">
+          <span style="font-weight:bold;">Badge Name: </span> <span>{{badge.name}}</span>
+        </div>
+        <div style="padding-top: 15px;">
+          <span style="font-weight:bold;">Organization: </span> <span>{{issuer.name}}</span>
+        </div>
+        <div style="padding-top: 15px;">
+          <span style="font-weight:bold;">Badge Description: </span> <span>{{badge.description}}</span>
+        </div> 
+        <div style="padding-top: 15px;">
+          <span style="font-weight:bold;">Badge Criteria: </span> <span>{{badge.criteria.content}}</span>
+        </div>
+        <div style="padding-top: 15px;">
+          <span style="font-weight:bold;">Earner: </span> <span>{{name}}</span>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+{% endblock %}

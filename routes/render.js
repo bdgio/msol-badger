@@ -5,6 +5,8 @@ const phrases = require('../lib/phrases');
 const logger = require('../lib/logger');
 const async = require('async');
 const _ = require('underscore');
+const phantom = require('phantom');
+const fs = require('fs');
 
 /*
  * Administrative Pages
@@ -221,15 +223,6 @@ exports.showBadge = function (req, res) {
   });
 };
 
-exports.criteria = function criteria(req, res) {
-  return res.render('public/criteria.html', {
-    badge: req.badge,
-    user: req.session.user,
-    csrf: req.session._csrf,
-    access: req.session.access
-  });
-}
-
 //Landing Page
 exports.explore = function explore(req, res) {
   return res.render('public/explore.html', {
@@ -285,7 +278,52 @@ exports.myBadge = function myBadge(req, res) {
     csrf: req.session._csrf,
     access: req.session.access
   });  
+};
+
+exports.badgePdfHtml = function badgePdfHtml(req, res, next) {
+  var name;
+  if (req.body.name) {
+    name = req.body.name;
+  }
+  else {
+    name = req.session.user.name;
+  }
+  
+  req.pdfHtml = req.nunjucks.render('public/badge-pdf.html', {
+    title: req.badge.name,
+    issuer: req.issuer,
+    badge: req.badge,
+    name: name,
+  }); 
+  
+  req.claimName = name; 
+  return next();
 }
+
+exports.myBadgeToPdf = function myBadgeToPdf(req, res) {
+  var pdffile = req.badge.name+req.claimName;
+  pdffile = pdffile.replace(/\s|\G/g, '');
+  var file = "./tmp/"+pdffile+".pdf";
+
+  phantom.create(function (ph) {
+    ph.createPage(function (page) {
+      page.set('settings.localToRemoteUrlAccessEnabled', true);
+      page.set('settings.loadImages', true);
+      page.set('settings.webSecurityEnabled', false);
+      page.set('content', req.pdfHtml);
+      page.set('viewportSize', { width: 800, height: 600 });
+      page.set('paperSize', { format: 'A4', orientation: 'portrait', border: '1cm' });
+      setTimeout(function () {
+        return page.render(file, function() {
+          fs.createReadStream(file).pipe(res);
+          res.attachment(file);
+          ph.exit();
+          fs.unlink(file);
+        }); 
+      }, 500);
+    });
+  }); 
+};
 
 exports.earnList = function earnList(req, res) {
   return res.render('public/earn-list.html', {
@@ -320,6 +358,27 @@ exports.faq = function faq(req, res) {
     access: req.session.access
   });
 };
+
+exports.levelUp = function levelUp(req, res) {
+  return res.render('public/level-up.html', {
+    title: "Level Up",
+    active: "levelup",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
+exports.breakwater = function breakwater(req, res) {
+  return res.render('public/breakwater.html', {
+    title: "Breakwater Learning",
+    active: "breakwater",
+    user: req.session.user,
+    csrf: req.session._csrf,
+    access: req.session.access
+  });
+};
+
 
 exports.privacy = function privacy(req, res) {
   return res.render('public/privacy-policy.html', {
@@ -405,15 +464,33 @@ exports.newUserClaim = function newUserClaim(req, res) {
 
 exports.claim = function claim(req, res) {
   return res.render('public/claim.html', {
+    title: "Claim Your Badge",
+    active: "claim",
     csrf: req.session._csrf,
-    code: req.query.code,
-    missing: req.query.missing,
+    user: req.session.user,
+    access: req.session.access,
+    claimCode: req.flash('claim'),
+    notFoundErr: req.flash('notFoundErr')
+  });
+};
+
+exports.printBadgeNoAccount = function printBadgeNoAccount(req, res) {
+  return res.render('public/badge-details-no-account.html', {
+    title: "Claim Your Badge",
+    active: "claim",
+    issuer: req.issuer,
+    badge: req.badge,
+    claimCode: req.claim,
+    programBadges: req.programBadges,
+    similarBadges: req.similarBadges,
+    csrf: req.session._csrf,
     user: req.session.user,
     access: req.session.access
   });
 };
 
-exports.confirmClaim = function confirmClaim(req, res) {
+
+/*exports.confirmClaim = function confirmClaim(req, res) {
   return res.render('public/confirm-claim.html', {
     csrf: req.session._csrf,
     code: req.body.code,
@@ -422,7 +499,7 @@ exports.confirmClaim = function confirmClaim(req, res) {
     user: req.session.user,
     access: req.session.access
   });
-};
+};*/
 
 exports.manageClaimCodes = function (req, res) {
   return res.render('admin/manage-claim-codes.html', {

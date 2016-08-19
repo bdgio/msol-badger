@@ -29,13 +29,16 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a href="/" class="pull-left navbar-brand"><img src="/img/msol-logo-blk.png"/></a>
+          <a href="https://www.mainestateoflearning.org" class="pull-left navbar-brand"><img src="/img/msol-logo-blk.png"/></a>
         </div>
 
         <div class="collapse navbar-collapse" id="navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="{%if active == 'explore'%}active{%endif%}"><a href="/">Explore</a></li>
-            <li class="{%if active == 'earn'%}active{%endif%}"><a href="/earn">Earn</a></li>
+            <li class="{%if active == 'explore'%}active{%endif%}"><a href="https://www.mainestateoflearning.org">Explore</a></li>
+            <li class="{%if active == 'earn'%}active{%endif%}"><a href="https://www.mainestateoflearning.org/earn">Earn</a></li>
+            <li class="{%if active == 'levelup'%}active{%endif%}"><a href="https://www.mainestateoflearning.org/level-up">Level Up</a></li>
+            <li class="{%if active == 'claim'%}active{%endif%}"><a href="https://www.mainestateoflearning.org/claim">Claim Your Badge</a></li>
+            
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
@@ -43,7 +46,7 @@
              <li class="{%if active == 'mybadges'%}active{%endif%}"><a href="/mybadges"> My Badges</a></li>
              {% if access == "super" %}
              <li class="{%if active == 'admin'%}active{%endif%}"><a href="/admin"> Admin</a></li>
-             <li class="{%if active == 'issuer'%}active{%endif%}"><a href="/issuer"> Issue </a></li>
+             <li class="{%if active == 'reports'%}active{%endif%}"><a href="/reports"> Reports</a></li>
              {% endif %}
               <li>
                 <a href="" class="js-logout-link">Log Out</a>
@@ -78,21 +81,20 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a href="/" class="pull-left navbar-brand"><img src="/img/msol-logo-white.png"/></a>
           </div>
           
           <div class="collapse navbar-collapse" id="navbar-collapse-2">
             <ul class="nav navbar-nav">
-              <li class="{%if active == 'about'%}active{%endif%}"><a href="/about">About</a></li>
-              <li class="{%if active == 'faq'%}active{%endif%}"><a href="/faq">FAQ</a></li>
-              <li class="{%if active == 'contact'%}active{%endif%}"> <a href="/contact-us">Contact Us</a></li>
-              <li class="{%if active == 'terms'%}active{%endif%}"> <a href="/terms-of-use">Terms of Use</a></li>
-              <li class="{%if active == 'privacy'%}active{%endif%}"> <a href="/privacy-policy">Privacy Policy</a></li>
+              <li class="{%if active == 'about'%}active{%endif%}"><a href="https://www.mainestateoflearning.org/about">About</a></li>
+              <li class="{%if active == 'breakwater'%}active{%endif%}"><a href="https://www.mainestateoflearning.org/breakwater">Breakwater Learning</a></li>
+              <li class="{%if active == 'faq'%}active{%endif%}"><a href="https://www.mainestateoflearning.org/faq">FAQ</a></li>
+              <li class="{%if active == 'contact'%}active{%endif%}"> <a href="https://www.mainestateoflearning.org/contact-us">Contact Us</a></li>
+              <li class="{%if active == 'terms'%}active{%endif%}"> <a href="https://www.mainestateoflearning.org/terms-of-use">Terms of Use</a></li>
+              <li class="{%if active == 'privacy'%}active{%endif%}"> <a href="https://www.mainestateoflearning.org/privacy-policy">Privacy Policy</a></li>
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li class="copyright">&copy; 2015 Maine State of Learning</li>
           </div><!-- /.navbar-collapse -->
-          <div class="row">
-            <div class="col-sm-12 copyright text-center">&copy; 2015 Maine State of Learning</div>
-          </div>
         </div><!-- /.container-fluid -->
       </div>
     </footer>
@@ -101,14 +103,15 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/common.js"></script>
     {% block footer %}
-    {% if nodeEnv == "production" %}
+    
+    {% if ga %}    
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-      ga('create', 'UA-43067975-1', 'auto');
+      ga('create', '{{ga}}', 'auto');
       ga('send', 'pageview');
 
     </script>

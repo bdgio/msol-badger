@@ -193,9 +193,16 @@ Badge.ADULT = ADULT;
 // Validators & Defaulters
 // -----------------------
 
+/* 
+This should probably be updated.
+If a badge name changes or a different program gets associated with it, the short name 
+doesn't get updated.
+Also there's a heavy reliance on short name being unique instead of using the _id.
+*/
+
 function setShortNameDefault(next) {
   if (!this.shortname && this.name)
-    this.shortname = util.slugify(this.name);
+    this.shortname = util.slugify(this.issuerName + " " +this.name);
   next();
 }
 BadgeSchema.pre('validate', setShortNameDefault);

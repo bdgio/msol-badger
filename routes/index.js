@@ -56,8 +56,16 @@ exports.define = function defineRoutes(app) {
   }));
 
   app.post('/admin/undo/:undoId', undo);
-  app.get('/admin/stats', [stats.monthly], render.stats);
-
+  /* This doesn't appear to render anything - KL */
+ // app.get('/admin/stats', [stats.monthly], render.stats);
+  
+  /* Reports */
+   app.get('/reports', [stats.monthly], render.reports);
+   app.get('/reports/users-report', [
+   user.retrieveUsers,
+   badge.findByUsers
+   ], render.userReport);
+   
   // Badge listing
   // -------------
   var indexMiddleware = [
@@ -134,12 +142,15 @@ exports.define = function defineRoutes(app) {
     behavior.findByShortName
   ], behavior.destroy);
 
+ /*
+ Not using this:
+ 
   app.get('/admin/users',[
     user.findAll()
   ], render.userList);
 
   app.delete('/admin/users', user.deleteInstancesByEmail);
-
+*/
 
   // Public, non-admin endpoints
   // ---------------------------
@@ -153,17 +164,25 @@ exports.define = function defineRoutes(app) {
   app.get('/badge/meta/:shortname', [
     findBadgeByParamShortname
   ], badge.meta);
-  app.get('/badge/criteria/:shortname', [
-    findBadgeByParamShortname
-  ], render.criteria);
+  
   app.get('/program/meta/:programId', [
     issuer.findProgramById
   ], issuer.meta);
   
+ /* app.get('/',function(req, res) {
+    res.redirect(301, 'https://mainestateoflearning.org/');
+  });
+  
+  app.get('/explore',function(req, res) {
+    res.redirect(301, 'https://mainestateoflearning.org/');
+  });*/
+  
   app.get('/', issuer.findAll,render.explore);
   app.get('/explore', issuer.findAll,render.explore);
   app.get('/about', render.about);
+  app.get('/breakwater', render.breakwater);
   app.get('/faq', render.faq);
+  app.get('/level-up', render.levelUp);
   app.get('/privacy-policy', render.privacy);
   app.get('/terms-of-use', render.terms);
   app.get('/contact-us', render.contactUs);
@@ -181,13 +200,22 @@ exports.define = function defineRoutes(app) {
   [badge.findByClaimCode,
   badge.findProgramBadges,
   issuer.findByBadgeProgram,
-  badge.getSimilarByBadgeTags,
+  badge.getSimilarByBadgeTags
   ], render.myBadge);
   
   
-  /*app.get('/print-badge/:claimCode',
-  [badge.findByClaimCode
-  ], render.myBadgeToPdf);*/
+  app.get('/print-badge/:claimCode',
+  [badge.findByClaimCode,
+  issuer.findByBadgeProgram,
+  render.badgePdfHtml
+  ], render.myBadgeToPdf);
+  
+  
+  app.post('/print-badge',
+  [badge.findByClaimCode,
+  issuer.findByBadgeProgram,
+  render.badgePdfHtml
+  ], render.myBadgeToPdf);
   
   app.post('/mybadges/:editFunction', user.editUser);
   
@@ -209,14 +237,19 @@ exports.define = function defineRoutes(app) {
   
   /* Earn Page */
   app.get('/earn/:option?', badge.findAllSortOptions,render.earnList);
+
+  /* Claim Your Badge Page */
+  app.get('/claim', render.claim);
   
- /* app.get('/claim/:claimCode',[
-    badge.findByClaimCode(),
-    user.retrieveUser()
-  ], render.newUserClaim);*/
+  app.post('/get-claimed-badge',
+  [badge.findByClaimCode,
+  badge.findProgramBadges,
+  issuer.findByBadgeProgram,
+  badge.getSimilarByBadgeTags
+  ], render.printBadgeNoAccount);
 
- /* app.get('/claim', render.claim);
-
+  /*
+  Don't believe we are using these any longer - KL
   app.post('/claim',[
     badge.findByClaimCode()
   ], render.confirmClaim);
@@ -224,7 +257,13 @@ exports.define = function defineRoutes(app) {
   app.post('/claim/confirm',[
     badge.findByClaimCode()
   ], badge.awardToUser);*/
-
+  
+  //email claim link
+  app.get('/claim/:claimCode',
+  [badge.findByClaimCode,
+  user.retrieveUser()
+  ], render.newUserClaim);
+  
   app.post('/new-badge-earner', user.signup);
   
   app.get('/404', render.notFound);
